@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="grid_item_divider">0.5dp</dimen>
+
+    <dimen name="app_bar_layout_height">202.5dp</dimen>
+    <dimen name="app_bar_scrim_height">100dp</dimen>
+
+    <dimen name="poster_width">120dp</dimen>
+    <dimen name="poster_height">180dp</dimen>
+
+    <dimen name="detail_text_size">16sp</dimen>
+
+    <dimen name="grid_info_height">48dp</dimen>
+    <dimen name="grid_info_text_size">16sp</dimen>
+
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_medium">16dp</dimen>
+    <dimen name="margin_large">24dp</dimen>
+</resources>

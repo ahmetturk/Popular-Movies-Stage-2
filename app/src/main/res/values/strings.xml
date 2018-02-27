@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Popular Movies</string>
+
+    <!--Shared Preferences key-->
+    <string name="pref_sort_key" translatable="false">sort_order</string>
+
+    <!--Menu item name for sorting spinner-->
+    <string name="action_sort">Sorting</string>
+
+    <!--For Sort Preference-->
+    <string name="pref_sort_popular" translatable="false">popular</string>
+    <string name="pref_sort_label_popular">Most Popular</string>
+    <string name="pref_sort_highest_rated" translatable="false">top_rated</string>
+    <string name="pref_sort_label_highest_rated">Highest Rated</string>
+
+    <string name="content_description_movie_item">Movie Poster</string>
+
+    <string name="language">en-US</string>
+
+    <!--For Detail Activity-->
+    <string name="release_date">Release Date</string>
+    <string name="user_rating">User Score</string>
+    <string name="user_rating_text">%1$s/10</string>
+    <string name="plot_synopsis">Overview</string>
+
+    <string name="no_internet">No internet connection Swipe to refresh</string>
+</resources>
