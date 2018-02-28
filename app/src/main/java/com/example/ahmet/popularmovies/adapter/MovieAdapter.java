@@ -1,4 +1,4 @@
-package com.example.ahmet.popularmovies;
+package com.example.ahmet.popularmovies.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.ahmet.popularmovies.DetailActivity;
+import com.example.ahmet.popularmovies.R;
 import com.example.ahmet.popularmovies.models.Movie;
 import com.squareup.picasso.Picasso;
 
@@ -25,7 +27,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     private List<Movie> mMoviesList;
 
 
-    MovieAdapter(Context context) {
+    public MovieAdapter(Context context) {
         this.mContext = context;
     }
 
@@ -56,7 +58,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         return mMoviesList.size();
     }
 
-    void clearMoviesList() {
+    public void clearMoviesList() {
         if (mMoviesList == null) {
             mMoviesList = new ArrayList<>();
         } else {
@@ -66,10 +68,16 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         }
     }
 
-    void addMoviesList(List<Movie> moviesList) {
+    public void addMoviesList(List<Movie> moviesList) {
         int positionStart = mMoviesList.size();
         mMoviesList.addAll(moviesList);
         notifyItemRangeInserted(positionStart, moviesList.size());
+    }
+
+    public void addMovie(Movie movie) {
+        int positionStart = mMoviesList.size();
+        mMoviesList.add(movie);
+        notifyItemInserted(positionStart);
     }
 
     class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

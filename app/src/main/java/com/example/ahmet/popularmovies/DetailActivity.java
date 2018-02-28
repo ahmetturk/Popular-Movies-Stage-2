@@ -1,10 +1,13 @@
 package com.example.ahmet.popularmovies;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +18,7 @@ import android.widget.TextView;
 
 import com.example.ahmet.popularmovies.adapter.ReviewAdapter;
 import com.example.ahmet.popularmovies.adapter.VideoAdapter;
+import com.example.ahmet.popularmovies.data.MovieContract;
 import com.example.ahmet.popularmovies.models.Movie;
 import com.example.ahmet.popularmovies.models.Review;
 import com.example.ahmet.popularmovies.models.Video;
@@ -29,10 +33,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 public class DetailActivity extends AppCompatActivity {
-
     public static final String DETAIL_INTENT_KEY = "com.example.ahmet.popularmovies.detail";
 
     @BindView(R.id.movieTitleTv)
@@ -51,7 +55,10 @@ public class DetailActivity extends AppCompatActivity {
     RecyclerView videosRecyclerView;
     @BindView(R.id.reviews_list)
     RecyclerView reviewsRecyclerView;
+    @BindView(R.id.favorite_button)
+    FloatingActionButton favoriteButton;
 
+    private boolean isFavorite;
     private VideoAdapter mVideoAdapter;
     private ReviewAdapter mReviewAdapter;
     private Target targetBackdrop;
@@ -77,8 +84,15 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         populateUI();
-        populateVideos();
-        populateReviews();
+        populateVideos(savedInstanceState);
+        populateReviews(savedInstanceState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("videos", mVideoAdapter.getList());
+        outState.putParcelableArrayList("reviews", mReviewAdapter.getList());
     }
 
     private void populateUI() {
@@ -118,9 +132,26 @@ public class DetailActivity extends AppCompatActivity {
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.error)
                 .into(posterIv);
+
+        Cursor cursor = getContentResolver().query(
+                MovieContract.MovieEntry.buildMovieUriWithId(movie.getMovieId()),
+                new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},
+                null,
+                null,
+                null);
+
+        isFavorite = false;
+        if (cursor != null && cursor.moveToNext()) {
+            isFavorite = true;
+            favoriteButton.setImageResource(R.drawable.ic_star_white_24px);
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
     }
 
-    private void populateVideos() {
+    private void populateVideos(Bundle savedInstanceState) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         videosRecyclerView.setLayoutManager(layoutManager);
 
@@ -130,22 +161,27 @@ public class DetailActivity extends AppCompatActivity {
         mVideoAdapter = new VideoAdapter(this);
         videosRecyclerView.setAdapter(mVideoAdapter);
 
-        FetchVideosTask fetchVideosTask = new FetchVideosTask(new AsyncTaskCompleteListener<List<Video>>() {
-            @Override
-            public void onTaskStart() {
-            }
+        if (savedInstanceState != null && savedInstanceState.containsKey("videos")) {
+            mVideoAdapter.addVideosList(savedInstanceState.<Video>getParcelableArrayList("videos"));
+        } else {
 
-            @Override
-            public void onTaskComplete(List<Video> result) {
-                if (result != null) {
-                    mVideoAdapter.addVideosList(result);
+            FetchVideosTask fetchVideosTask = new FetchVideosTask(new AsyncTaskCompleteListener<List<Video>>() {
+                @Override
+                public void onTaskStart() {
                 }
-            }
-        });
-        fetchVideosTask.execute(movie.getMovieId());
+
+                @Override
+                public void onTaskComplete(List<Video> result) {
+                    if (result != null) {
+                        mVideoAdapter.addVideosList(result);
+                    }
+                }
+            });
+            fetchVideosTask.execute(movie.getMovieId());
+        }
     }
 
-    private void populateReviews() {
+    private void populateReviews(Bundle savedInstanceState) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         reviewsRecyclerView.setLayoutManager(layoutManager);
 
@@ -155,18 +191,51 @@ public class DetailActivity extends AppCompatActivity {
         mReviewAdapter = new ReviewAdapter(this);
         reviewsRecyclerView.setAdapter(mReviewAdapter);
 
-        FetchReviewsTask fetchReviewsTask = new FetchReviewsTask(new AsyncTaskCompleteListener<List<Review>>() {
-            @Override
-            public void onTaskStart() {
-            }
+        if (savedInstanceState != null && savedInstanceState.containsKey("reviews")) {
+            mReviewAdapter.addReviewsList(savedInstanceState.<Review>getParcelableArrayList("reviews"));
+        } else {
 
-            @Override
-            public void onTaskComplete(List<Review> result) {
-                if (result != null) {
-                    mReviewAdapter.addReviewsList(result);
+            FetchReviewsTask fetchReviewsTask = new FetchReviewsTask(new AsyncTaskCompleteListener<List<Review>>() {
+                @Override
+                public void onTaskStart() {
                 }
-            }
-        });
-        fetchReviewsTask.execute(movie.getMovieId());
+
+                @Override
+                public void onTaskComplete(List<Review> result) {
+                    if (result != null) {
+                        mReviewAdapter.addReviewsList(result);
+                    }
+                }
+            });
+            fetchReviewsTask.execute(movie.getMovieId());
+        }
+    }
+
+    @OnClick(R.id.favorite_button)
+    public void onClickFavoriteButton() {
+        if (isFavorite) {
+            getContentResolver().delete(
+                    MovieContract.MovieEntry.buildMovieUriWithId(movie.getMovieId()),
+                    null,
+                    null);
+            isFavorite = false;
+            favoriteButton.setImageResource(R.drawable.ic_star_border_white_24px);
+
+        } else {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.getMovieId());
+            contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, movie.getMovieTitle());
+            contentValues.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
+            contentValues.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, movie.getPlotSynopsis());
+            contentValues.put(MovieContract.MovieEntry.COLUMN_USER_RATING, movie.getUserRating());
+            contentValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
+            contentValues.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH, movie.getBackdropPath());
+
+            getContentResolver().insert(
+                    MovieContract.MovieEntry.CONTENT_URI,
+                    contentValues);
+            isFavorite = true;
+            favoriteButton.setImageResource(R.drawable.ic_star_white_24px);
+        }
     }
 }

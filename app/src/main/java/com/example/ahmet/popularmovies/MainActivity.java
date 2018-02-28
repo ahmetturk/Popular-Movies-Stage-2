@@ -1,9 +1,15 @@
 package com.example.ahmet.popularmovies;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -19,18 +25,40 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.ahmet.popularmovies.adapter.MovieAdapter;
+import com.example.ahmet.popularmovies.data.MovieContract;
 import com.example.ahmet.popularmovies.models.Movie;
 import com.example.ahmet.popularmovies.task.FetchMoviesTask;
 import com.example.ahmet.popularmovies.utils.AsyncTaskCompleteListener;
 import com.example.ahmet.popularmovies.utils.GridItemDecoration;
 import com.example.ahmet.popularmovies.utils.RecyclerViewScrollListener;
+import com.facebook.stetho.Stetho;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements AsyncTaskCompleteListener<List<Movie>> {
+public class MainActivity extends AppCompatActivity implements AsyncTaskCompleteListener<List<Movie>>, LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final int INDEX_MOVIE_ID = 0;
+    private static final int INDEX_MOVIE_TITLE = 1;
+    private static final int INDEX_POSTER_PATH = 2;
+    private static final int INDEX_PLOT_SYNOPSIS = 3;
+    private static final int INDEX_USER_RATING = 4;
+    private static final int INDEX_RELEASE_DATE = 5;
+    private static final int INDEX_BACKDROP_PATH = 6;
+
+    private static final String[] MOVIE_PROJECTION = {
+            MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+            MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
+            MovieContract.MovieEntry.COLUMN_POSTER_PATH,
+            MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS,
+            MovieContract.MovieEntry.COLUMN_USER_RATING,
+            MovieContract.MovieEntry.COLUMN_RELEASE_DATE,
+            MovieContract.MovieEntry.COLUMN_BACKDROP_PATH};
+
+    private static final int FAVORITES = 2;
+    private static final int ID_FAVORITES_LOADER = 1;
 
     @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout mSwipeRefreshLayout;
@@ -44,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskComplete
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Stetho.initializeWithDefaults(this);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
@@ -61,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskComplete
                 fetchNewMovies(page);
             }
         };
-        recyclerView.addOnScrollListener(mScrollListener);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -79,10 +107,20 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskComplete
 
     private void fetchNewMovies(int page) {
         int sorting = Preferences.getSorting(this);
-        String sortMethod = getResources().getStringArray(R.array.sort_pref_list)[sorting];
 
-        FetchMoviesTask moviesTask = new FetchMoviesTask(getString(R.string.language), this);
-        moviesTask.execute(sortMethod, String.valueOf(page));
+        if (sorting == FAVORITES) {
+            recyclerView.clearOnScrollListeners();
+            mSwipeRefreshLayout.setEnabled(false);
+            getSupportLoaderManager().restartLoader(ID_FAVORITES_LOADER, null, this);
+        } else {
+            recyclerView.addOnScrollListener(mScrollListener);
+            mSwipeRefreshLayout.setEnabled(true);
+            getSupportLoaderManager().destroyLoader(ID_FAVORITES_LOADER);
+
+            String sortMethod = getResources().getStringArray(R.array.sort_pref_list)[sorting];
+            FetchMoviesTask moviesTask = new FetchMoviesTask(getString(R.string.language), this);
+            moviesTask.execute(sortMethod, String.valueOf(page));
+        }
     }
 
     @Override
@@ -148,5 +186,43 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskComplete
             internetStatusTv.setVisibility(View.GONE);
             mMoviesAdapter.addMoviesList(result);
         }
+    }
+
+    @NonNull
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
+        switch (id) {
+            case ID_FAVORITES_LOADER:
+                return new CursorLoader(this,
+                        MovieContract.MovieEntry.CONTENT_URI,
+                        MOVIE_PROJECTION,
+                        null,
+                        null,
+                        null);
+
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + id);
+        }
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                mMoviesAdapter.addMovie(new Movie(
+                        cursor.getString(INDEX_MOVIE_ID),
+                        cursor.getString(INDEX_MOVIE_TITLE),
+                        cursor.getString(INDEX_POSTER_PATH),
+                        cursor.getString(INDEX_PLOT_SYNOPSIS),
+                        cursor.getString(INDEX_USER_RATING),
+                        cursor.getString(INDEX_RELEASE_DATE),
+                        cursor.getString(INDEX_BACKDROP_PATH)));
+            }
+        }
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+        mMoviesAdapter.clearMoviesList();
     }
 }

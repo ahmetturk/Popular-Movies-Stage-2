@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="grid_item_divider">0.5dp</dimen>
+    <dimen name="grid_item_divider">1dp</dimen>
     <dimen name="video_item_divider">16dp</dimen>
     <dimen name="video_item_divider_small">4dp</dimen>
 

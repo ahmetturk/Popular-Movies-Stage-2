@@ -1,9 +1,9 @@
-package com.example.ahmet.popularmovies;
+package com.example.ahmet.popularmovies.task;
 
 import android.net.Uri;
 import android.os.AsyncTask;
 
-import com.example.ahmet.popularmovies.models.VideoInfo;
+import com.example.ahmet.popularmovies.models.Review;
 import com.example.ahmet.popularmovies.utils.AsyncTaskCompleteListener;
 
 import org.json.JSONArray;
@@ -21,31 +21,31 @@ import java.util.List;
 
 import static com.example.ahmet.popularmovies.BuildConfig.API_KEY;
 
-class FetchVideosTask extends AsyncTask<String, Void, List<VideoInfo>> {
+public class FetchReviewsTask extends AsyncTask<String, Void, List<Review>> {
 
     // JSON Keys
-    private static final String VIDEO_URL_KEY = "key";
-    private static final String VIDEO_NAME_KEY = "name";
+    private static final String REVIEW_AUTHOR_KEY = "author";
+    private static final String REVIEW_CONTENT_KEY = "content";
 
-    private final AsyncTaskCompleteListener<List<VideoInfo>> listener;
+    private final AsyncTaskCompleteListener<List<Review>> listener;
 
-    FetchVideosTask(AsyncTaskCompleteListener<List<VideoInfo>> listener) {
+    public FetchReviewsTask(AsyncTaskCompleteListener<List<Review>> listener) {
         this.listener = listener;
     }
 
     @Override
-    protected List<VideoInfo> doInBackground(String... params) {
+    protected List<Review> doInBackground(String... params) {
         try {
             Uri uri = Uri.parse("https://api.themoviedb.org/3/movie/").buildUpon()
                     .appendPath(params[0])
-                    .appendPath("videos")
+                    .appendPath("reviews")
                     .appendQueryParameter("api_key", API_KEY)
                     .build();
             URL url = new URL(uri.toString());
 
-            String jsonVideosResponse = getResponseFromHttpUrl(url);
+            String jsonReviewsResponse = getResponseFromHttpUrl(url);
 
-            return getVideosDataFromJson(jsonVideosResponse);
+            return getReviewsDataFromJson(jsonReviewsResponse);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,9 +54,9 @@ class FetchVideosTask extends AsyncTask<String, Void, List<VideoInfo>> {
     }
 
     @Override
-    protected void onPostExecute(List<VideoInfo> videosList) {
-        super.onPostExecute(videosList);
-        listener.onTaskComplete(videosList);
+    protected void onPostExecute(List<Review> reviews) {
+        super.onPostExecute(reviews);
+        listener.onTaskComplete(reviews);
     }
 
     private String getResponseFromHttpUrl(URL url) throws IOException {
@@ -84,21 +84,21 @@ class FetchVideosTask extends AsyncTask<String, Void, List<VideoInfo>> {
         }
     }
 
-    private List<VideoInfo> getVideosDataFromJson(String videosJsonStr) throws JSONException {
-        JSONObject jsonObject = new JSONObject(videosJsonStr);
-        JSONArray videos = jsonObject.getJSONArray("results");
+    private List<Review> getReviewsDataFromJson(String reviewsJsonStr) throws JSONException {
+        JSONObject jsonObject = new JSONObject(reviewsJsonStr);
+        JSONArray reviews = jsonObject.getJSONArray("results");
 
-        List<VideoInfo> videosList = new ArrayList<>(videos.length());
+        List<Review> reviewsList = new ArrayList<>(reviews.length());
 
-        for (int i = 0; i < videos.length(); i++) {
-            JSONObject videoDetail = videos.getJSONObject(i);
+        for (int i = 0; i < reviews.length(); i++) {
+            JSONObject reviewDetail = reviews.getJSONObject(i);
 
-            VideoInfo video = new VideoInfo(
-                    videoDetail.getString(VIDEO_URL_KEY),
-                    videoDetail.getString(VIDEO_NAME_KEY));
+            Review review = new Review(
+                    reviewDetail.getString(REVIEW_AUTHOR_KEY),
+                    reviewDetail.getString(REVIEW_CONTENT_KEY));
 
-            videosList.add(video);
+            reviewsList.add(review);
         }
-        return videosList;
+        return reviewsList;
     }
 }

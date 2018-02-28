@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.example.ahmet.popularmovies.R;
 import com.example.ahmet.popularmovies.models.Review;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -52,6 +53,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewAdap
     public void addReviewsList(List<Review> reviewsList) {
         mList = reviewsList;
         notifyItemRangeInserted(0, reviewsList.size());
+    }
+
+    public ArrayList<Review> getList() {
+        return (ArrayList<Review>) mList;
     }
 
     class ReviewAdapterViewHolder extends RecyclerView.ViewHolder {

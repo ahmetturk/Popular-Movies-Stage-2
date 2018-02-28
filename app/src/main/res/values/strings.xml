@@ -10,9 +10,12 @@
 
     <!--For Sort Preference-->
     <string name="pref_sort_popular" translatable="false">popular</string>
-    <string name="pref_sort_label_popular">Most Popular</string>
     <string name="pref_sort_highest_rated" translatable="false">top_rated</string>
+
+    <!--For Sort Labels-->
+    <string name="pref_sort_label_popular">Most Popular</string>
     <string name="pref_sort_label_highest_rated">Highest Rated</string>
+    <string name="pref_sort_label_favorite">Favorites</string>
 
     <string name="content_description_movie_item">Movie Poster</string>
     <string name="content_description_video">Video</string>

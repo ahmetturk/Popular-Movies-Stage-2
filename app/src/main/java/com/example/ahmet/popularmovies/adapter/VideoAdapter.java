@@ -1,4 +1,4 @@
-package com.example.ahmet.popularmovies;
+package com.example.ahmet.popularmovies.adapter;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -12,9 +12,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.ahmet.popularmovies.models.VideoInfo;
+import com.example.ahmet.popularmovies.R;
+import com.example.ahmet.popularmovies.models.Video;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -23,9 +25,9 @@ import butterknife.ButterKnife;
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoAdapterViewHolder> {
 
     private final Context mContext;
-    private List<VideoInfo> mList;
+    private List<Video> mList;
 
-    VideoAdapter(Context context) {
+    public VideoAdapter(Context context) {
         this.mContext = context;
     }
 
@@ -38,11 +40,11 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoAdapter
 
     @Override
     public void onBindViewHolder(@NonNull VideoAdapterViewHolder holder, int position) {
-        VideoInfo videoInfo = mList.get(position);
+        Video video = mList.get(position);
 
-        holder.nameTv.setText(videoInfo.getVideoName());
+        holder.nameTv.setText(video.getVideoName());
 
-        String photoUrl = String.format("https://img.youtube.com/vi/%s/0.jpg", videoInfo.getVideoUrl());
+        String photoUrl = String.format("https://img.youtube.com/vi/%s/0.jpg", video.getVideoUrl());
         Picasso.with(mContext)
                 .load(photoUrl)
                 .placeholder(R.drawable.placeholder)
@@ -58,9 +60,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoAdapter
         return mList.size();
     }
 
-    void addVideosList(List<VideoInfo> videosList) {
+    public void addVideosList(List<Video> videosList) {
         mList = videosList;
         notifyItemRangeInserted(0, videosList.size());
+    }
+
+    public ArrayList<Video> getList() {
+        return (ArrayList<Video>) mList;
     }
 
     class VideoAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -77,11 +83,11 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoAdapter
 
         @Override
         public void onClick(View v) {
-            VideoInfo videoInfo = mList.get(getAdapterPosition());
+            Video video = mList.get(getAdapterPosition());
 
-            Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + videoInfo.getVideoUrl()));
+            Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + video.getVideoUrl()));
             Intent webIntent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://www.youtube.com/watch?v=" + videoInfo.getVideoUrl()));
+                    Uri.parse("https://www.youtube.com/watch?v=" + video.getVideoUrl()));
             try {
                 mContext.startActivity(appIntent);
             } catch (ActivityNotFoundException ex) {

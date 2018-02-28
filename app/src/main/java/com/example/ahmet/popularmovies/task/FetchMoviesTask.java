@@ -1,4 +1,4 @@
-package com.example.ahmet.popularmovies;
+package com.example.ahmet.popularmovies.task;
 
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -21,7 +21,7 @@ import java.util.List;
 
 import static com.example.ahmet.popularmovies.BuildConfig.API_KEY;
 
-class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
+public class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
 
     // JSON Keys
     private static final String MOVIE_ID_KEY = "id";
@@ -35,7 +35,7 @@ class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
     private final String language;
     private final AsyncTaskCompleteListener<List<Movie>> listener;
 
-    FetchMoviesTask(String language, AsyncTaskCompleteListener<List<Movie>> listener) {
+    public FetchMoviesTask(String language, AsyncTaskCompleteListener<List<Movie>> listener) {
         this.language = language;
         this.listener = listener;
     }
@@ -110,11 +110,11 @@ class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
             moviesList.add(new Movie(
                     movieDetail.getString(MOVIE_ID_KEY),
                     movieDetail.getString(MOVIE_TITLE_KEY),
-                    "http://image.tmdb.org/t/p/w500/" + movieDetail.getString(POSTER_PATH_KEY),
+                    "http://image.tmdb.org/t/p/w342" + movieDetail.getString(POSTER_PATH_KEY),
                     movieDetail.getString(PLOT_SYNOPSIS_KEY),
                     movieDetail.getString(USER_RATING_KEY),
                     movieDetail.getString(RELEASE_DATE_KEY),
-                    "http://image.tmdb.org/t/p/w1280/" + movieDetail.getString(BACKDROP_PATH_KEY)));
+                    "http://image.tmdb.org/t/p/w780" + movieDetail.getString(BACKDROP_PATH_KEY)));
         }
         return moviesList;
     }
