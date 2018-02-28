@@ -86,39 +86,22 @@
 
             <TextView
                 android:id="@+id/releaseDateLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_medium"
-                android:layout_marginStart="@dimen/margin_medium"
-                android:layout_marginTop="@dimen/margin_small"
+                style="@style/DetailLabel"
                 android:text="@string/release_date"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="@color/colorPrimary"
                 app:layout_constraintStart_toEndOf="@+id/poster"
                 app:layout_constraintTop_toBottomOf="@+id/movieTitleTv" />
 
             <TextView
                 android:id="@+id/releaseDateTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_large"
-                android:layout_marginStart="@dimen/margin_large"
-                android:textColor="@color/detailTextColor"
-                android:textSize="@dimen/detail_text_size"
+                style="@style/DetailText"
                 app:layout_constraintStart_toEndOf="@+id/poster"
                 app:layout_constraintTop_toBottomOf="@+id/releaseDateLabel"
                 tools:text="2014-09-10" />
 
             <TextView
                 android:id="@+id/userRatingLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_medium"
-                android:layout_marginStart="@dimen/margin_medium"
-                android:layout_marginTop="@dimen/margin_small"
+                style="@style/DetailLabel"
                 android:text="@string/user_rating"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="@color/colorPrimary"
                 app:layout_constraintStart_toEndOf="@+id/poster"
                 app:layout_constraintTop_toBottomOf="@+id/releaseDateTv" />
 
@@ -136,14 +119,8 @@
 
             <TextView
                 android:id="@+id/plotSynopsisLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_medium"
-                android:layout_marginStart="@dimen/margin_medium"
-                android:layout_marginTop="@dimen/margin_small"
+                style="@style/DetailLabel"
                 android:text="@string/plot_synopsis"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="@color/colorPrimary"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/poster" />
 
@@ -151,16 +128,29 @@
                 android:id="@+id/plotSynopsisTv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/margin_small"
-                android:layout_marginEnd="@dimen/margin_large"
-                android:layout_marginStart="@dimen/margin_large"
+                android:layout_marginEnd="@dimen/margin_medium"
+                android:layout_marginStart="@dimen/margin_medium"
                 android:textColor="@color/detailTextColor"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/plotSynopsisLabel"
                 tools:text="Set in a post-apocalyptic world, young Thomas is deposited in a community of boys after his memory is erased, soon learning they're all trapped in a maze that will require him to join forces with fellow “runners” for a shot at escape." />
 
+            <TextView
+                android:id="@+id/videosLabel"
+                style="@style/DetailLabel"
+                android:text="@string/videos"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/plotSynopsisTv" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/videos_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/videosLabel" />
+            
         </android.support.constraint.ConstraintLayout>
 
 

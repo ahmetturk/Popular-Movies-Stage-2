@@ -15,6 +15,7 @@
     <string name="pref_sort_label_highest_rated">Highest Rated</string>
 
     <string name="content_description_movie_item">Movie Poster</string>
+    <string name="content_description_video">Video</string>
 
     <string name="language">en-US</string>
 
@@ -23,6 +24,8 @@
     <string name="user_rating">User Score</string>
     <string name="user_rating_text">%1$s/10</string>
     <string name="plot_synopsis">Overview</string>
+    <string name="videos">Videos</string>
+    <string name="reviews">Reviews</string>
 
     <string name="no_internet">No internet connection Swipe to refresh</string>
 </resources>

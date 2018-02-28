@@ -24,6 +24,7 @@ import static com.example.ahmet.popularmovies.BuildConfig.API_KEY;
 class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
 
     // JSON Keys
+    private static final String MOVIE_ID_KEY = "id";
     private static final String MOVIE_TITLE_KEY = "title";
     private static final String POSTER_PATH_KEY = "poster_path";
     private static final String PLOT_SYNOPSIS_KEY = "overview";
@@ -98,28 +99,22 @@ class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
     }
 
     private List<Movie> getMoviesDataFromJson(String moviesJsonStr) throws JSONException {
-        List<Movie> moviesList = new ArrayList<>();
-
         JSONObject jsonObject = new JSONObject(moviesJsonStr);
         JSONArray movies = jsonObject.getJSONArray("results");
+
+        List<Movie> moviesList = new ArrayList<>(movies.length());
+
         for (int i = 0; i < movies.length(); i++) {
             JSONObject movieDetail = movies.getJSONObject(i);
 
-                /* movieName is original name of movie
-                 * posterPath is image url of the poster of movie
-                 * plotSynopsis is plot synopsis of movie
-                 * userRating is user rating of movie
-                 * releaseDate is release date of movie
-                 * backdropPath is image url of the backdrop of movie*/
-
-            String movieName = movieDetail.getString(MOVIE_TITLE_KEY);
-            String posterPath = "http://image.tmdb.org/t/p/w500/" + movieDetail.getString(POSTER_PATH_KEY);
-            String plotSynopsis = movieDetail.getString(PLOT_SYNOPSIS_KEY);
-            String userRating = movieDetail.getString(USER_RATING_KEY);
-            String releaseDate = movieDetail.getString(RELEASE_DATE_KEY);
-            String backdropPath = "http://image.tmdb.org/t/p/w1280/" + movieDetail.getString(BACKDROP_PATH_KEY);
-
-            moviesList.add(new Movie(movieName, posterPath, plotSynopsis, userRating, releaseDate, backdropPath));
+            moviesList.add(new Movie(
+                    movieDetail.getString(MOVIE_ID_KEY),
+                    movieDetail.getString(MOVIE_TITLE_KEY),
+                    "http://image.tmdb.org/t/p/w500/" + movieDetail.getString(POSTER_PATH_KEY),
+                    movieDetail.getString(PLOT_SYNOPSIS_KEY),
+                    movieDetail.getString(USER_RATING_KEY),
+                    movieDetail.getString(RELEASE_DATE_KEY),
+                    "http://image.tmdb.org/t/p/w1280/" + movieDetail.getString(BACKDROP_PATH_KEY)));
         }
         return moviesList;
     }

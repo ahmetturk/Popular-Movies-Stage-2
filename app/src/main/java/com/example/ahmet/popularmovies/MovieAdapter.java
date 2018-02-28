@@ -1,6 +1,8 @@
 package com.example.ahmet.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,23 +22,22 @@ import butterknife.ButterKnife;
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
     private final Context mContext;
-    private final MovieAdapterOnClickHandler mClickHandler;
     private List<Movie> mMoviesList;
 
 
-    MovieAdapter(Context context, MovieAdapterOnClickHandler clickHandler) {
+    MovieAdapter(Context context) {
         this.mContext = context;
-        this.mClickHandler = clickHandler;
     }
 
     @Override
-    public MovieAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @NonNull
+    public MovieAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.item_movie, parent, false);
         return new MovieAdapterViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MovieAdapterViewHolder holder, int position) {
         Movie movie = mMoviesList.get(position);
 
         holder.movieTitleTv.setText(movie.getMovieTitle());
@@ -51,9 +52,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     public int getItemCount() {
         if (mMoviesList == null) {
             return 0;
-        } else {
-            return mMoviesList.size();
         }
+        return mMoviesList.size();
     }
 
     void clearMoviesList() {
@@ -72,10 +72,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         notifyItemRangeInserted(positionStart, moviesList.size());
     }
 
-    public interface MovieAdapterOnClickHandler {
-        void onClick(Movie movie);
-    }
-
     class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.movie_title_tv)
         TextView movieTitleTv;
@@ -91,7 +87,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         @Override
         public void onClick(View v) {
             Movie movie = mMoviesList.get(getAdapterPosition());
-            mClickHandler.onClick(movie);
+            Intent intent = new Intent(mContext, DetailActivity.class);
+            intent.putExtra(DetailActivity.DETAIL_INTENT_KEY, movie);
+            mContext.startActivity(intent);
         }
     }
 }

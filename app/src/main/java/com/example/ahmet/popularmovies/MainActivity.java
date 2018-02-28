@@ -1,7 +1,6 @@
 package com.example.ahmet.popularmovies;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -29,14 +28,14 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler, AsyncTaskCompleteListener<List<Movie>> {
+public class MainActivity extends AppCompatActivity implements AsyncTaskCompleteListener<List<Movie>> {
 
     @BindView(R.id.swipeRefreshLayout)
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.internet_status)
-    private TextView internetStatusTv;
+    TextView internetStatusTv;
     @BindView(R.id.movies_list)
-    private RecyclerView recyclerView;
+    RecyclerView recyclerView;
     private MovieAdapter mMoviesAdapter;
     private RecyclerViewScrollListener mScrollListener;
 
@@ -51,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         recyclerView.addItemDecoration(new GridItemDecoration(this));
 
-        mMoviesAdapter = new MovieAdapter(this, this);
+        mMoviesAdapter = new MovieAdapter(this);
         recyclerView.setAdapter(mMoviesAdapter);
 
         mScrollListener = new RecyclerViewScrollListener(gridLayoutManager) {
@@ -82,13 +81,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         FetchMoviesTask moviesTask = new FetchMoviesTask(getString(R.string.language), this);
         moviesTask.execute(sortMethod, String.valueOf(page));
-    }
-
-    @Override
-    public void onClick(Movie movie) {
-        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-        intent.putExtra(DetailActivity.DETAIL_INTENT_KEY, movie);
-        startActivity(intent);
     }
 
     @Override
