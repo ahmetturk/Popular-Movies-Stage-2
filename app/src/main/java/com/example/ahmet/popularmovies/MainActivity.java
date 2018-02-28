@@ -18,7 +18,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.ahmet.popularmovies.adapter.MovieAdapter;
 import com.example.ahmet.popularmovies.models.Movie;
+import com.example.ahmet.popularmovies.task.FetchMoviesTask;
 import com.example.ahmet.popularmovies.utils.AsyncTaskCompleteListener;
 import com.example.ahmet.popularmovies.utils.GridItemDecoration;
 import com.example.ahmet.popularmovies.utils.RecyclerViewScrollListener;

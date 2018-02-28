@@ -13,10 +13,15 @@ import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.ahmet.popularmovies.adapter.ReviewAdapter;
+import com.example.ahmet.popularmovies.adapter.VideoAdapter;
 import com.example.ahmet.popularmovies.models.Movie;
-import com.example.ahmet.popularmovies.models.VideoInfo;
+import com.example.ahmet.popularmovies.models.Review;
+import com.example.ahmet.popularmovies.models.Video;
+import com.example.ahmet.popularmovies.task.FetchReviewsTask;
+import com.example.ahmet.popularmovies.task.FetchVideosTask;
 import com.example.ahmet.popularmovies.utils.AsyncTaskCompleteListener;
-import com.example.ahmet.popularmovies.utils.VideoItemDecoration;
+import com.example.ahmet.popularmovies.utils.HorizontalItemDecoration;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -44,8 +49,11 @@ public class DetailActivity extends AppCompatActivity {
     ImageView posterIv;
     @BindView(R.id.videos_list)
     RecyclerView videosRecyclerView;
+    @BindView(R.id.reviews_list)
+    RecyclerView reviewsRecyclerView;
 
     private VideoAdapter mVideoAdapter;
+    private ReviewAdapter mReviewAdapter;
     private Target targetBackdrop;
     private CollapsingToolbarLayout collapsingToolbar;
     private Movie movie;
@@ -69,29 +77,8 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         populateUI();
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        videosRecyclerView.setLayoutManager(layoutManager);
-
-        RecyclerView.ItemDecoration itemDecoration = new VideoItemDecoration(this);
-        videosRecyclerView.addItemDecoration(itemDecoration);
-
-        mVideoAdapter = new VideoAdapter(this);
-        videosRecyclerView.setAdapter(mVideoAdapter);
-
-        FetchVideosTask fetchVideosTask = new FetchVideosTask(new AsyncTaskCompleteListener<List<VideoInfo>>() {
-            @Override
-            public void onTaskStart() {
-            }
-
-            @Override
-            public void onTaskComplete(List<VideoInfo> result) {
-                if (result != null) {
-                    mVideoAdapter.addVideosList(result);
-                }
-            }
-        });
-        fetchVideosTask.execute(movie.getMovieId());
+        populateVideos();
+        populateReviews();
     }
 
     private void populateUI() {
@@ -131,5 +118,55 @@ public class DetailActivity extends AppCompatActivity {
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.error)
                 .into(posterIv);
+    }
+
+    private void populateVideos() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        videosRecyclerView.setLayoutManager(layoutManager);
+
+        RecyclerView.ItemDecoration itemDecoration = new HorizontalItemDecoration(this);
+        videosRecyclerView.addItemDecoration(itemDecoration);
+
+        mVideoAdapter = new VideoAdapter(this);
+        videosRecyclerView.setAdapter(mVideoAdapter);
+
+        FetchVideosTask fetchVideosTask = new FetchVideosTask(new AsyncTaskCompleteListener<List<Video>>() {
+            @Override
+            public void onTaskStart() {
+            }
+
+            @Override
+            public void onTaskComplete(List<Video> result) {
+                if (result != null) {
+                    mVideoAdapter.addVideosList(result);
+                }
+            }
+        });
+        fetchVideosTask.execute(movie.getMovieId());
+    }
+
+    private void populateReviews() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        reviewsRecyclerView.setLayoutManager(layoutManager);
+
+        RecyclerView.ItemDecoration itemDecoration = new HorizontalItemDecoration(this);
+        reviewsRecyclerView.addItemDecoration(itemDecoration);
+
+        mReviewAdapter = new ReviewAdapter(this);
+        reviewsRecyclerView.setAdapter(mReviewAdapter);
+
+        FetchReviewsTask fetchReviewsTask = new FetchReviewsTask(new AsyncTaskCompleteListener<List<Review>>() {
+            @Override
+            public void onTaskStart() {
+            }
+
+            @Override
+            public void onTaskComplete(List<Review> result) {
+                if (result != null) {
+                    mReviewAdapter.addReviewsList(result);
+                }
+            }
+        });
+        fetchReviewsTask.execute(movie.getMovieId());
     }
 }

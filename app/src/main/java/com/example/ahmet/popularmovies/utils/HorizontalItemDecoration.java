@@ -7,11 +7,11 @@ import android.view.View;
 
 import com.example.ahmet.popularmovies.R;
 
-public class VideoItemDecoration extends RecyclerView.ItemDecoration {
+public class HorizontalItemDecoration extends RecyclerView.ItemDecoration {
 
     private final Context mContext;
 
-    public VideoItemDecoration(Context context) {
+    public HorizontalItemDecoration(Context context) {
         this.mContext = context;
     }
 

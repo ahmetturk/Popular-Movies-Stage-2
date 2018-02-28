@@ -150,7 +150,25 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/videosLabel" />
-            
+
+            <TextView
+                android:id="@+id/reviewsLabel"
+                style="@style/DetailLabel"
+                android:text="@string/reviews"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/videos_list" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/reviews_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/detail_page_bottom_margin"
+                android:layout_marginTop="@dimen/margin_medium"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/reviewsLabel" />
+
         </android.support.constraint.ConstraintLayout>
 
 
