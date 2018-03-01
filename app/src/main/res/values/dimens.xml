@@ -13,7 +13,9 @@
     <dimen name="poster_height">180dp</dimen>
 
     <dimen name="grid_info_height">48dp</dimen>
-    <dimen name="grid_info_text_size">16sp</dimen>
+    <dimen name="grid_left_padding">8dp</dimen>
+    <dimen name="grid_right_padding">48dp</dimen>
+    <dimen name="grid_info_text_size">14sp</dimen>
 
     <dimen name="margin_small">8dp</dimen>
     <dimen name="margin_medium">16dp</dimen>
@@ -23,11 +25,15 @@
     <dimen name="video_item_height">117dp</dimen>
     <dimen name="video_item_padding">16dp</dimen>
     <dimen name="video_item_text_size">14sp</dimen>
+    <dimen name="video_name_height">48dp</dimen>
 
     <dimen name="review_item_width">300dp</dimen>
-    <dimen name="review_item_height">300dp</dimen>
-    <dimen name="review_item_padding">16dp</dimen>
+    <dimen name="review_author_height">32dp</dimen>
     <dimen name="review_author_text_size">24sp</dimen>
+    <dimen name="review_content_height">171dp</dimen>
     <dimen name="review_content_text_size">14sp</dimen>
+    <dimen name="review_view_more_height">48dp</dimen>
 
+    <dimen name="image_size">48dp</dimen>
+    <dimen name="image_padding">12dp</dimen>
 </resources>

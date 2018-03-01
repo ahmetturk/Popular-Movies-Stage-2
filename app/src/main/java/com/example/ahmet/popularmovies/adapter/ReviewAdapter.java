@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ahmet.popularmovies.R;
@@ -16,6 +17,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewAdapterViewHolder> {
@@ -64,10 +69,40 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewAdap
         TextView authorTv;
         @BindView(R.id.content_tv)
         TextView contentTv;
+        @BindView(R.id.view_more_tv)
+        TextView viewMoreTv;
+        @BindView(R.id.less_iv)
+        ImageView lessIv;
+        @BindView(R.id.expand_iv)
+        ImageView expandIv;
+        boolean expanded = false;
 
         ReviewAdapterViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+        }
+
+        @OnClick({R.id.view_more_tv, R.id.expand_iv, R.id.less_iv})
+        public void expandCard() {
+            int lineCount = contentTv.getLineCount();
+
+            if (lineCount < 10) {
+                return;
+            }
+
+            if (expanded) {
+                expanded = false;
+                contentTv.setMaxLines(10);
+                lessIv.setVisibility(GONE);
+                expandIv.setImageResource(R.drawable.ic_expand_more_black_24px);
+                viewMoreTv.setText(R.string.view_more);
+            } else {
+                expanded = true;
+                contentTv.setMaxLines(Integer.MAX_VALUE);
+                lessIv.setVisibility(VISIBLE);
+                expandIv.setImageResource(R.drawable.ic_expand_less_black_24px);
+                viewMoreTv.setText(R.string.view_less);
+            }
         }
 
     }

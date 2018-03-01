@@ -4,9 +4,11 @@
 
     <!--Shared Preferences key-->
     <string name="pref_sort_key" translatable="false">sort_order</string>
+    <string name="pref_changed_movie" translatable="false">changed_movie</string>
 
     <!--Menu item name for sorting spinner-->
     <string name="action_sort">Sorting</string>
+    <string name="action_share">Share</string>
 
     <!--For Sort Preference-->
     <string name="pref_sort_popular" translatable="false">popular</string>
@@ -19,6 +21,9 @@
 
     <string name="content_description_movie_item">Movie Poster</string>
     <string name="content_description_video">Video</string>
+    <string name="content_description_favorite">Favorite</string>
+    <string name="content_description_less">Expand Less</string>
+    <string name="content_description_more">Expand More</string>
 
     <string name="language">en-US</string>
 
@@ -32,4 +37,8 @@
 
     <string name="no_internet">No internet connection Swipe to refresh</string>
     <string name="no_favorite">Select a movie as favorite\nIt will be shown here</string>
+    <string name="no_app">There is not any sharing app installed on device</string>
+
+    <string name="view_more">VIEW MORE</string>
+    <string name="view_less">VIEW LESS</string>
 </resources>

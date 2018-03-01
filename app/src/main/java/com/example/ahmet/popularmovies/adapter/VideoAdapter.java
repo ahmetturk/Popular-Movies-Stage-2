@@ -69,6 +69,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoAdapter
         return (ArrayList<Video>) mList;
     }
 
+    public String getShareUrl() {
+        return "https://www.youtube.com/watch?v=" + mList.get(0).getVideoUrl();
+    }
+
     class VideoAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.video_iv)
         ImageView videoIv;

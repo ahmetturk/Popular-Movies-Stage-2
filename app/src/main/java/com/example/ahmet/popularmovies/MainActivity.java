@@ -16,7 +16,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -79,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskComplete
     private GridLayoutManager gridLayoutManager;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Stetho.initializeWithDefaults(this);
         setContentView(R.layout.activity_main);
@@ -105,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskComplete
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                mSavedInstanceState = null;
                 populateUI();
             }
         });
@@ -118,6 +118,16 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskComplete
         outState.putInt(BUNDLE_PREF, PopMovPreferences.getSorting(this));
         outState.putParcelable(BUNDLE_RECYCLER, gridLayoutManager.onSaveInstanceState());
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        int movieNumber = PopMovPreferences.getChangedMovie(this);
+        if (movieNumber != -1) {
+            mMoviesAdapter.notifyItemChanged(movieNumber);
+            PopMovPreferences.setChangedMovie(this, -1);
+        }
     }
 
     private void populateUI() {
@@ -162,8 +172,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskComplete
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.popular_movies, menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
 
         MenuItem item = menu.findItem(R.id.sort_spinner);
         Spinner spinner = (Spinner) item.getActionView();
@@ -246,9 +255,8 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskComplete
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
         mMoviesAdapter.clearMoviesList();
-        if (cursor != null) {
-            cursor.move(-1);
-            while (cursor.moveToNext()) {
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
                 mMoviesAdapter.addMovie(new Movie(
                         cursor.getString(INDEX_MOVIE_ID),
                         cursor.getString(INDEX_MOVIE_TITLE),
@@ -257,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskComplete
                         cursor.getString(INDEX_USER_RATING),
                         cursor.getString(INDEX_RELEASE_DATE),
                         cursor.getString(INDEX_BACKDROP_PATH)));
-            }
+            } while (cursor.moveToNext());
         }
 
         if (mMoviesAdapter.getItemCount() == 0) {

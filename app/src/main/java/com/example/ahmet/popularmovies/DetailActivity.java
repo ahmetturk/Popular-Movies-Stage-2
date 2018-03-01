@@ -1,5 +1,6 @@
 package com.example.ahmet.popularmovies;
 
+import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -8,13 +9,17 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.ahmet.popularmovies.adapter.ReviewAdapter;
 import com.example.ahmet.popularmovies.adapter.VideoAdapter;
@@ -38,6 +43,9 @@ import butterknife.OnClick;
 
 public class DetailActivity extends AppCompatActivity {
     public static final String DETAIL_INTENT_KEY = "com.example.ahmet.popularmovies.detail";
+
+    private static final String BUNDLE_VIDEOS = "videos";
+    private static final String BUNDLE_REVIEWS = "reviews";
 
     @BindView(R.id.movieTitleTv)
     TextView movieTitleTv;
@@ -91,8 +99,8 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("videos", mVideoAdapter.getList());
-        outState.putParcelableArrayList("reviews", mReviewAdapter.getList());
+        outState.putParcelableArrayList(BUNDLE_VIDEOS, mVideoAdapter.getList());
+        outState.putParcelableArrayList(BUNDLE_REVIEWS, mReviewAdapter.getList());
     }
 
     private void populateUI() {
@@ -161,8 +169,8 @@ public class DetailActivity extends AppCompatActivity {
         mVideoAdapter = new VideoAdapter(this);
         videosRecyclerView.setAdapter(mVideoAdapter);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey("videos")) {
-            mVideoAdapter.addVideosList(savedInstanceState.<Video>getParcelableArrayList("videos"));
+        if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_VIDEOS)) {
+            mVideoAdapter.addVideosList(savedInstanceState.<Video>getParcelableArrayList(BUNDLE_VIDEOS));
         } else {
 
             FetchVideosTask fetchVideosTask = new FetchVideosTask(new AsyncTaskCompleteListener<List<Video>>() {
@@ -172,7 +180,8 @@ public class DetailActivity extends AppCompatActivity {
 
                 @Override
                 public void onTaskComplete(List<Video> result) {
-                    if (result != null) {
+                    if (result != null && !result.isEmpty()) {
+
                         mVideoAdapter.addVideosList(result);
                     }
                 }
@@ -191,8 +200,8 @@ public class DetailActivity extends AppCompatActivity {
         mReviewAdapter = new ReviewAdapter(this);
         reviewsRecyclerView.setAdapter(mReviewAdapter);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey("reviews")) {
-            mReviewAdapter.addReviewsList(savedInstanceState.<Review>getParcelableArrayList("reviews"));
+        if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_REVIEWS)) {
+            mReviewAdapter.addReviewsList(savedInstanceState.<Review>getParcelableArrayList(BUNDLE_REVIEWS));
         } else {
 
             FetchReviewsTask fetchReviewsTask = new FetchReviewsTask(new AsyncTaskCompleteListener<List<Review>>() {
@@ -237,5 +246,29 @@ public class DetailActivity extends AppCompatActivity {
             isFavorite = true;
             favoriteButton.setImageResource(R.drawable.ic_star_white_24px);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.detail_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.share) {
+            String shareText = mVideoAdapter.getShareUrl();
+            if (shareText != null && !shareText.isEmpty()) {
+                ShareCompat.IntentBuilder intentBuilder = ShareCompat.IntentBuilder.from(this)
+                        .setText(shareText)
+                        .setType("text/plain");
+                try {
+                    intentBuilder.startChooser();
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(this, R.string.no_app, Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

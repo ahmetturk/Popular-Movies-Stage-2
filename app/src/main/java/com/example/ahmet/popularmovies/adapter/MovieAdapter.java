@@ -1,7 +1,9 @@
 package com.example.ahmet.popularmovies.adapter;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,7 +13,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ahmet.popularmovies.DetailActivity;
+import com.example.ahmet.popularmovies.PopMovPreferences;
 import com.example.ahmet.popularmovies.R;
+import com.example.ahmet.popularmovies.data.MovieContract;
 import com.example.ahmet.popularmovies.models.Movie;
 import com.squareup.picasso.Picasso;
 
@@ -20,6 +24,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
@@ -48,6 +53,25 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.error)
                 .into(holder.movieItemIv);
+
+        Cursor cursor = mContext.getContentResolver().query(
+                MovieContract.MovieEntry.buildMovieUriWithId(movie.getMovieId()),
+                new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},
+                null,
+                null,
+                null);
+
+        if (cursor != null && cursor.moveToNext()) {
+            holder.favoriteIv.setImageResource(R.drawable.ic_star_white_24px);
+            holder.isFavorite = true;
+        } else {
+            holder.favoriteIv.setImageResource(R.drawable.ic_star_border_white_24px);
+            holder.isFavorite = false;
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
     }
 
     @Override
@@ -93,6 +117,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         TextView movieTitleTv;
         @BindView(R.id.movie_item_iv)
         ImageView movieItemIv;
+        @BindView(R.id.favorite_iv)
+        ImageView favoriteIv;
+        boolean isFavorite;
 
         MovieAdapterViewHolder(View view) {
             super(view);
@@ -102,10 +129,42 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
         @Override
         public void onClick(View v) {
-            Movie movie = mList.get(getAdapterPosition());
+            int movieNumber = getAdapterPosition();
+            PopMovPreferences.setChangedMovie(mContext, movieNumber);
+
+            Movie movie = mList.get(movieNumber);
             Intent intent = new Intent(mContext, DetailActivity.class);
             intent.putExtra(DetailActivity.DETAIL_INTENT_KEY, movie);
             mContext.startActivity(intent);
+        }
+
+        @OnClick(R.id.favorite_iv)
+        public void onClickFavoriteButton() {
+            Movie movie = mList.get(getAdapterPosition());
+            if (isFavorite) {
+                mContext.getContentResolver().delete(
+                        MovieContract.MovieEntry.buildMovieUriWithId(movie.getMovieId()),
+                        null,
+                        null);
+                isFavorite = false;
+                favoriteIv.setImageResource(R.drawable.ic_star_border_white_24px);
+
+            } else {
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.getMovieId());
+                contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, movie.getMovieTitle());
+                contentValues.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
+                contentValues.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, movie.getPlotSynopsis());
+                contentValues.put(MovieContract.MovieEntry.COLUMN_USER_RATING, movie.getUserRating());
+                contentValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
+                contentValues.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH, movie.getBackdropPath());
+
+                mContext.getContentResolver().insert(
+                        MovieContract.MovieEntry.CONTENT_URI,
+                        contentValues);
+                isFavorite = true;
+                favoriteIv.setImageResource(R.drawable.ic_star_white_24px);
+            }
         }
     }
 }

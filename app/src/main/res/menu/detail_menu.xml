@@ -2,9 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/sort_spinner"
-        android:background="#ff00"
-        android:title="@string/action_sort"
-        app:actionViewClass="android.widget.Spinner"
+        android:id="@+id/share"
+        android:icon="@drawable/ic_share_white_24px"
+        android:title="@string/action_share"
         app:showAsAction="always" />
 </menu>

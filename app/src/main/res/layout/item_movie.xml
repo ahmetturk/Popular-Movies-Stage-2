@@ -17,19 +17,29 @@
 
     <TextView
         android:id="@+id/movie_title_tv"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="@dimen/grid_info_height"
         android:background="#88000000"
         android:gravity="center_vertical"
         android:maxLines="2"
-        android:paddingEnd="@dimen/margin_medium"
-        android:paddingLeft="@dimen/margin_medium"
-        android:paddingRight="@dimen/margin_medium"
-        android:paddingStart="@dimen/margin_medium"
+        android:paddingEnd="@dimen/grid_right_padding"
+        android:paddingLeft="@dimen/grid_left_padding"
+        android:paddingRight="@dimen/grid_right_padding"
+        android:paddingStart="@dimen/grid_left_padding"
         android:textColor="@android:color/white"
         android:textSize="@dimen/grid_info_text_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/favorite_iv"
+        android:layout_width="@dimen/grid_info_height"
+        android:layout_height="@dimen/grid_info_height"
+        android:contentDescription="@string/content_description_favorite"
+        android:padding="@dimen/image_padding"
+        app:layout_constraintBottom_toBottomOf="@+id/movie_title_tv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_star_border_white_24px" />
 
 </android.support.constraint.ConstraintLayout>
