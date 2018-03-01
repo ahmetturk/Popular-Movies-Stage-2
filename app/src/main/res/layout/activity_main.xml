@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/internet_status"
+        android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_small"
@@ -15,7 +15,6 @@
         android:layout_marginStart="@dimen/margin_small"
         android:layout_marginTop="@dimen/margin_small"
         android:gravity="center"
-        android:text="@string/no_internet"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"

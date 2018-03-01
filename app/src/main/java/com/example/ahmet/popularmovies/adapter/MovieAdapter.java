@@ -24,7 +24,7 @@ import butterknife.ButterKnife;
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
     private final Context mContext;
-    private List<Movie> mMoviesList;
+    private List<Movie> mList;
 
 
     public MovieAdapter(Context context) {
@@ -40,7 +40,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     @Override
     public void onBindViewHolder(@NonNull MovieAdapterViewHolder holder, int position) {
-        Movie movie = mMoviesList.get(position);
+        Movie movie = mList.get(position);
 
         holder.movieTitleTv.setText(movie.getMovieTitle());
         Picasso.with(mContext)
@@ -52,32 +52,40 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     @Override
     public int getItemCount() {
-        if (mMoviesList == null) {
+        if (mList == null) {
             return 0;
         }
-        return mMoviesList.size();
+        return mList.size();
     }
 
     public void clearMoviesList() {
-        if (mMoviesList == null) {
-            mMoviesList = new ArrayList<>();
+        if (mList == null) {
+            mList = new ArrayList<>();
         } else {
-            int itemCount = mMoviesList.size();
-            mMoviesList.clear();
+            int itemCount = mList.size();
+            mList.clear();
             notifyItemRangeRemoved(0, itemCount);
         }
     }
 
     public void addMoviesList(List<Movie> moviesList) {
-        int positionStart = mMoviesList.size();
-        mMoviesList.addAll(moviesList);
-        notifyItemRangeInserted(positionStart, moviesList.size());
+        if (moviesList != null) {
+            int positionStart = mList.size();
+            mList.addAll(moviesList);
+            notifyItemRangeInserted(positionStart, moviesList.size());
+        }
     }
 
     public void addMovie(Movie movie) {
-        int positionStart = mMoviesList.size();
-        mMoviesList.add(movie);
-        notifyItemInserted(positionStart);
+        if (movie != null) {
+            int positionStart = mList.size();
+            mList.add(movie);
+            notifyItemInserted(positionStart);
+        }
+    }
+
+    public ArrayList<Movie> getList() {
+        return (ArrayList<Movie>) mList;
     }
 
     class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -94,7 +102,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
         @Override
         public void onClick(View v) {
-            Movie movie = mMoviesList.get(getAdapterPosition());
+            Movie movie = mList.get(getAdapterPosition());
             Intent intent = new Intent(mContext, DetailActivity.class);
             intent.putExtra(DetailActivity.DETAIL_INTENT_KEY, movie);
             mContext.startActivity(intent);

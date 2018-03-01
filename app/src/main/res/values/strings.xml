@@ -31,4 +31,5 @@
     <string name="reviews">Reviews</string>
 
     <string name="no_internet">No internet connection Swipe to refresh</string>
+    <string name="no_favorite">Select a movie as favorite\nIt will be shown here</string>
 </resources>

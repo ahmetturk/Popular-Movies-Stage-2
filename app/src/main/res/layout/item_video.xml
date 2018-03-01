@@ -19,8 +19,11 @@
         <TextView
             android:id="@+id/name_tv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/video_item_padding"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:maxLines="2"
+            android:paddingLeft="@dimen/video_item_padding"
+            android:paddingRight="@dimen/video_item_padding"
             android:textColor="@color/detailTextColor"
             android:textSize="@dimen/video_item_text_size"
             app:layout_constraintBottom_toBottomOf="parent"

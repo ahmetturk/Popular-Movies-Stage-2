@@ -40,5 +40,18 @@ abstract public class RecyclerViewScrollListener extends RecyclerView.OnScrollLi
         this.loading = false;
     }
 
+    public void setState(int page, int count) {
+        this.page = page;
+        this.previousTotalItemCount = count;
+    }
+
+    public int getCount() {
+        return previousTotalItemCount;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
     public abstract void onLoadMore(int page);
 }
