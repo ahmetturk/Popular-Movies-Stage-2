@@ -40,7 +40,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     @Override
     @NonNull
     public MovieAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.item_movie, parent, false);
+        View view = LayoutInflater.from(mContext)
+                .inflate(R.layout.item_movie, parent, false);
         return new MovieAdapterViewHolder(view);
     }
 
@@ -128,6 +129,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
             view.setOnClickListener(this);
         }
 
+        /**
+         * starts detail activity for this movie
+         * <p>
+         * setChangedMovie is called to refresh the favorite star icon of this movie
+         * when returning back to main activity
+         */
         @Override
         public void onClick(View v) {
             int movieNumber = getAdapterPosition();
@@ -139,6 +146,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
             mContext.startActivity(intent);
         }
 
+        /**
+         * adds the movie to favorite or remove it if it already exists
+         * adding favorite means adds it to sql database
+         */
         @OnClick(R.id.favorite_iv)
         public void onClickFavoriteButton(View view) {
             String snackBarText;

@@ -138,8 +138,7 @@
                 android:textColor="@color/detailTextColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/plotSynopsisLabel"
-                tools:text="Set in a post-apocalyptic world, young Thomas is deposited in a community of boys after his memory is erased, soon learning they're all trapped in a maze that will require him to join forces with fellow “runners” for a shot at escape." />
+                app:layout_constraintTop_toBottomOf="@+id/plotSynopsisLabel" />
 
             <TextView
                 android:id="@+id/videosLabel"

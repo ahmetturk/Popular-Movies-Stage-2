@@ -34,7 +34,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoAdapter
     @NonNull
     @Override
     public VideoAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.item_video, parent, false);
+        View view = LayoutInflater.from(mContext)
+                .inflate(R.layout.item_video, parent, false);
         return new VideoAdapterViewHolder(view);
     }
 
@@ -89,7 +90,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoAdapter
         public void onClick(View v) {
             Video video = mList.get(getAdapterPosition());
 
-            Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + video.getVideoUrl()));
+            Intent appIntent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("vnd.youtube:" + video.getVideoUrl()));
+
             Intent webIntent = new Intent(Intent.ACTION_VIEW,
                     Uri.parse("https://www.youtube.com/watch?v=" + video.getVideoUrl()));
             try {

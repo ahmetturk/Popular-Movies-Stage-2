@@ -108,6 +108,9 @@ public class DetailActivity extends AppCompatActivity {
         outState.putParcelableArrayList(BUNDLE_REVIEWS, mReviewAdapter.getList());
     }
 
+    /**
+     * populates UI of Detail Activity except Videos and Reviews
+     */
     private void populateUI() {
         movieTitleTv.setText(movie.getMovieTitle());
         releaseDateTv.setText(movie.getReleaseDate());
@@ -164,8 +167,12 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * fetch videos and populate their views
+     */
     private void populateVideos(Bundle savedInstanceState) {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager layoutManager =
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         videosRecyclerView.setLayoutManager(layoutManager);
 
         RecyclerView.ItemDecoration itemDecoration = new HorizontalItemDecoration(this);
@@ -178,25 +185,30 @@ public class DetailActivity extends AppCompatActivity {
             mVideoAdapter.addVideosList(savedInstanceState.<Video>getParcelableArrayList(BUNDLE_VIDEOS));
         } else {
 
-            FetchVideosTask fetchVideosTask = new FetchVideosTask(new AsyncTaskCompleteListener<List<Video>>() {
-                @Override
-                public void onTaskStart() {
-                }
+            FetchVideosTask fetchVideosTask =
+                    new FetchVideosTask(new AsyncTaskCompleteListener<List<Video>>() {
+                        @Override
+                        public void onTaskStart() {
+                        }
 
-                @Override
-                public void onTaskComplete(List<Video> result) {
-                    if (result != null && !result.isEmpty()) {
+                        @Override
+                        public void onTaskComplete(List<Video> result) {
+                            if (result != null && !result.isEmpty()) {
 
-                        mVideoAdapter.addVideosList(result);
-                    }
-                }
-            });
+                                mVideoAdapter.addVideosList(result);
+                            }
+                        }
+                    });
             fetchVideosTask.execute(movie.getMovieId());
         }
     }
 
+    /**
+     * fetch reviews and populate their views
+     */
     private void populateReviews(Bundle savedInstanceState) {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager layoutManager =
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         reviewsRecyclerView.setLayoutManager(layoutManager);
 
         RecyclerView.ItemDecoration itemDecoration = new HorizontalItemDecoration(this);
@@ -209,22 +221,27 @@ public class DetailActivity extends AppCompatActivity {
             mReviewAdapter.addReviewsList(savedInstanceState.<Review>getParcelableArrayList(BUNDLE_REVIEWS));
         } else {
 
-            FetchReviewsTask fetchReviewsTask = new FetchReviewsTask(new AsyncTaskCompleteListener<List<Review>>() {
-                @Override
-                public void onTaskStart() {
-                }
+            FetchReviewsTask fetchReviewsTask =
+                    new FetchReviewsTask(new AsyncTaskCompleteListener<List<Review>>() {
+                        @Override
+                        public void onTaskStart() {
+                        }
 
-                @Override
-                public void onTaskComplete(List<Review> result) {
-                    if (result != null) {
-                        mReviewAdapter.addReviewsList(result);
-                    }
-                }
-            });
+                        @Override
+                        public void onTaskComplete(List<Review> result) {
+                            if (result != null) {
+                                mReviewAdapter.addReviewsList(result);
+                            }
+                        }
+                    });
             fetchReviewsTask.execute(movie.getMovieId());
         }
     }
 
+    /**
+     * adds the movie to favorite or remove it if it already exists
+     * adding favorite means adds it to sql database
+     */
     @OnClick(R.id.favorite_button)
     public void onClickFavoriteButton() {
         String snackBarText;

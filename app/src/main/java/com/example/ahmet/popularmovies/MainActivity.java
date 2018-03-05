@@ -38,7 +38,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements AsyncTaskCompleteListener<List<Movie>>, LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends AppCompatActivity
+        implements AsyncTaskCompleteListener<List<Movie>>, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int INDEX_MOVIE_ID = 0;
     private static final int INDEX_MOVIE_TITLE = 1;
@@ -162,6 +163,16 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskComplete
         }
     }
 
+
+    /**
+     * fetch movies from the tmdb API
+     *
+     * @param page    the number of the page that will be fetched from API
+     * @param sorting selected sorting method by user
+     *                0 = most popular
+     *                1 = highest rated
+     *                2 = favorites
+     */
     private void fetchNewMovies(int page, int sorting) {
         getSupportLoaderManager().destroyLoader(ID_FAVORITES_LOADER);
         String sortingMethod = getResources().getStringArray(R.array.sort_pref_list)[sorting];
@@ -198,6 +209,11 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskComplete
         return true;
     }
 
+    /**
+     * calculates number of columns
+     *
+     * @return the number of columns in the grid layout of main activity
+     */
     private int numberOfColumns() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -209,6 +225,11 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskComplete
         return nColumns;
     }
 
+    /**
+     * get the internet connection status
+     *
+     * @return true if the device has internet connection, false otherwise
+     */
     private boolean isOnline() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null) {

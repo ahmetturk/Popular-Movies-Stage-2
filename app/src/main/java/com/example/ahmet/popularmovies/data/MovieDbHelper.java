@@ -38,7 +38,8 @@ class MovieDbHelper extends SQLiteOpenHelper {
         // check the old version then upgrade the database according to it
         if (oldVersion < 2) {
             // for example adding a new column on version 2
-            // sqLiteDatabase.execSQL("ALTER TABLE " + MovieEntry.TABLE_NAME + " ADD COLUMN " + MovieEntry.NEW_COLUMN + " TEXT;");
+            // sqLiteDatabase.execSQL("ALTER TABLE " + MovieEntry.TABLE_NAME
+            // + " ADD COLUMN " + MovieEntry.NEW_COLUMN + " TEXT;");
         }
     }
 }

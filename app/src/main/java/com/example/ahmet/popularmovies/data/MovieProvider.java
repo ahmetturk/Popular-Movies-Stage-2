@@ -39,7 +39,8 @@ public class MovieProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
+                        @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         Cursor cursor;
 
         switch (sUriMatcher.match(uri)) {
@@ -92,7 +93,9 @@ public class MovieProvider extends ContentProvider {
 
         switch (sUriMatcher.match(uri)) {
             case CODE_MOVIES:
-                long _id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, contentValues);
+                long _id = db.insert(MovieContract.MovieEntry.TABLE_NAME,
+                        null, contentValues);
+
                 if (_id != -1) {
                     getContext().getContentResolver().notifyChange(uri, null);
                     return ContentUris.withAppendedId(MovieContract.MovieEntry.CONTENT_URI, _id);
@@ -135,7 +138,9 @@ public class MovieProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String selection, @Nullable String[] selectionArgs) {
+    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues,
+                      @Nullable String selection, @Nullable String[] selectionArgs) {
+
         int numRowsUpdated;
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 
