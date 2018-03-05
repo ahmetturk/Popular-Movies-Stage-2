@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -139,7 +140,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         }
 
         @OnClick(R.id.favorite_iv)
-        public void onClickFavoriteButton() {
+        public void onClickFavoriteButton(View view) {
+            String snackBarText;
             Movie movie = mList.get(getAdapterPosition());
             if (isFavorite) {
                 mContext.getContentResolver().delete(
@@ -148,7 +150,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                         null);
                 isFavorite = false;
                 favoriteIv.setImageResource(R.drawable.ic_star_border_white_24px);
-
+                snackBarText = mContext.getString(R.string.remove_favorite);
             } else {
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.getMovieId());
@@ -164,7 +166,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                         contentValues);
                 isFavorite = true;
                 favoriteIv.setImageResource(R.drawable.ic_star_white_24px);
+                snackBarText = mContext.getString(R.string.add_favorite);
             }
+            Snackbar.make(view, snackBarText, Snackbar.LENGTH_SHORT).show();
         }
     }
 }

@@ -41,4 +41,7 @@
 
     <string name="view_more">VIEW MORE</string>
     <string name="view_less">VIEW LESS</string>
+
+    <string name="add_favorite">Added to favorites</string>
+    <string name="remove_favorite">Removed from favorites</string>
 </resources>

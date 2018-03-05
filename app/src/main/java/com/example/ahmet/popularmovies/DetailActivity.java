@@ -8,7 +8,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
@@ -65,12 +67,15 @@ public class DetailActivity extends AppCompatActivity {
     RecyclerView reviewsRecyclerView;
     @BindView(R.id.favorite_button)
     FloatingActionButton favoriteButton;
+    @BindView(R.id.collapsing_toolbar)
+    CollapsingToolbarLayout collapsingToolbar;
+    @BindView(R.id.coordinator_layout)
+    CoordinatorLayout coordinatorLayout;
 
     private boolean isFavorite;
     private VideoAdapter mVideoAdapter;
     private ReviewAdapter mReviewAdapter;
     private Target targetBackdrop;
-    private CollapsingToolbarLayout collapsingToolbar;
     private Movie movie;
 
     @Override
@@ -222,6 +227,7 @@ public class DetailActivity extends AppCompatActivity {
 
     @OnClick(R.id.favorite_button)
     public void onClickFavoriteButton() {
+        String snackBarText;
         if (isFavorite) {
             getContentResolver().delete(
                     MovieContract.MovieEntry.buildMovieUriWithId(movie.getMovieId()),
@@ -229,7 +235,7 @@ public class DetailActivity extends AppCompatActivity {
                     null);
             isFavorite = false;
             favoriteButton.setImageResource(R.drawable.ic_star_border_white_24px);
-
+            snackBarText = getString(R.string.remove_favorite);
         } else {
             ContentValues contentValues = new ContentValues();
             contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.getMovieId());
@@ -245,7 +251,9 @@ public class DetailActivity extends AppCompatActivity {
                     contentValues);
             isFavorite = true;
             favoriteButton.setImageResource(R.drawable.ic_star_white_24px);
+            snackBarText = getString(R.string.add_favorite);
         }
+        Snackbar.make(coordinatorLayout, snackBarText, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

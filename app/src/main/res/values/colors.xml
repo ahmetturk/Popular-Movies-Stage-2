@@ -7,4 +7,6 @@
     <color name="detailTextColor">#212121</color>
     <color name="dividerColor">#BDBDBD</color>
     <color name="viewMoreColor">#454545</color>
+
+    <color name="gray">#2D2D2D</color>
 </resources>

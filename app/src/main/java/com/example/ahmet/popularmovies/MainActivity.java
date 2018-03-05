@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskComplete
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.sort_spinner_list, R.layout.sort_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(R.layout.sort_dropdown_item);
         spinner.setAdapter(adapter);
 
         spinner.setSelection(PopMovPreferences.getSorting(MainActivity.this));
