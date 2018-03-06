@@ -13,11 +13,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.ahmet.popularmovies.DetailActivity;
-import com.example.ahmet.popularmovies.PopMovPreferences;
 import com.example.ahmet.popularmovies.R;
+import com.example.ahmet.popularmovies.activity.DetailActivity;
 import com.example.ahmet.popularmovies.data.MovieContract;
-import com.example.ahmet.popularmovies.models.Movie;
+import com.example.ahmet.popularmovies.data.PopMovPreferences;
+import com.example.ahmet.popularmovies.model.Movie;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
         holder.movieTitleTv.setText(movie.getMovieTitle());
         Picasso.with(mContext)
-                .load(movie.getPosterPath())
+                .load("http://image.tmdb.org/t/p/w342" + movie.getPosterPath())
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.error)
                 .into(holder.movieItemIv);

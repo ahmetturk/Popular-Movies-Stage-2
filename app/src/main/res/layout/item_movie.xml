@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
-        android:contentDescription="@string/content_description_movie_item"
+        android:contentDescription="@string/cd_movie_item"
         android:scaleType="centerCrop" />
 
     <TextView
@@ -19,6 +19,7 @@
         android:layout_height="@dimen/grid_info_height"
         android:layout_alignParentBottom="true"
         android:background="#88000000"
+        android:ellipsize="end"
         android:gravity="center_vertical"
         android:maxLines="2"
         android:paddingEnd="@dimen/grid_right_padding"
@@ -35,7 +36,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:contentDescription="@string/content_description_favorite"
+        android:contentDescription="@string/cd_favorite"
         android:padding="@dimen/image_padding"
         app:srcCompat="@drawable/ic_star_border_white_24px" />
 

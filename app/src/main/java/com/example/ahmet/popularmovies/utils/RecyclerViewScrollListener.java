@@ -26,7 +26,7 @@ abstract public class RecyclerViewScrollListener extends RecyclerView.OnScrollLi
             previousTotalItemCount = totalItemCount;
         }
 
-        int visibleThreshold = 2;
+        int visibleThreshold = 6;
         if (!loading && (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
             onLoadMore(page);
             page++;

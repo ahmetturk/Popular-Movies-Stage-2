@@ -7,9 +7,4 @@
         <item>@string/pref_sort_label_favorite</item>
     </string-array>
 
-    <!--List of sorting preference-->
-    <string-array name="sort_pref_list">
-        <item>@string/pref_sort_popular</item>
-        <item>@string/pref_sort_highest_rated</item>
-    </string-array>
 </resources>

@@ -1,7 +1,9 @@
-package com.example.ahmet.popularmovies.models;
+package com.example.ahmet.popularmovies.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.google.gson.annotations.SerializedName;
 
 public class Video implements Parcelable {
     public static final Parcelable.Creator<Video> CREATOR
@@ -15,7 +17,9 @@ public class Video implements Parcelable {
         }
     };
 
+    @SerializedName("key")
     private final String videoUrl;
+    @SerializedName("name")
     private final String videoName;
 
     public Video(String videoUrl, String videoName) {

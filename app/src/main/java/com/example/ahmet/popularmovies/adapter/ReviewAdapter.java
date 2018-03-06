@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ahmet.popularmovies.R;
-import com.example.ahmet.popularmovies.models.Review;
+import com.example.ahmet.popularmovies.model.Review;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +58,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewAdap
 
     public void addReviewsList(List<Review> reviewsList) {
         mList = reviewsList;
-        notifyItemRangeInserted(0, reviewsList.size());
+        notifyDataSetChanged();
     }
 
     public ArrayList<Review> getList() {

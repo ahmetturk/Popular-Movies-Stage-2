@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     app:cardElevation="2dp">
 
-    <android.support.constraint.ConstraintLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -13,24 +13,21 @@
             android:id="@+id/video_iv"
             android:layout_width="match_parent"
             android:layout_height="@dimen/video_item_height"
-            android:contentDescription="@string/content_description_video"
+            android:contentDescription="@string/cd_video"
             android:scaleType="centerCrop" />
 
         <TextView
             android:id="@+id/name_tv"
             android:layout_width="match_parent"
             android:layout_height="@dimen/video_name_height"
+            android:layout_below="@+id/video_iv"
+            android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="2"
             android:paddingLeft="@dimen/video_item_padding"
             android:paddingRight="@dimen/video_item_padding"
             android:textColor="@color/detailTextColor"
-            android:textSize="@dimen/video_item_text_size"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/video_iv" />
+            android:textSize="@dimen/video_item_text_size" />
 
-    </android.support.constraint.ConstraintLayout>
-
+    </RelativeLayout>
 </android.support.v7.widget.CardView>

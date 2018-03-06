@@ -1,7 +1,9 @@
-package com.example.ahmet.popularmovies.models;
+package com.example.ahmet.popularmovies.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.google.gson.annotations.SerializedName;
 
 public class Review implements Parcelable {
     public static final Parcelable.Creator<Review> CREATOR
@@ -15,7 +17,9 @@ public class Review implements Parcelable {
         }
     };
 
+    @SerializedName("author")
     private final String author;
+    @SerializedName("content")
     private final String content;
 
     public Review(String author, String content) {

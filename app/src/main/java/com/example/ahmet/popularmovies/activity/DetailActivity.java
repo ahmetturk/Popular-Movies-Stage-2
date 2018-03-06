@@ -1,4 +1,4 @@
-package com.example.ahmet.popularmovies;
+package com.example.ahmet.popularmovies.activity;
 
 import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
@@ -19,19 +19,21 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.ahmet.popularmovies.R;
 import com.example.ahmet.popularmovies.adapter.ReviewAdapter;
 import com.example.ahmet.popularmovies.adapter.VideoAdapter;
 import com.example.ahmet.popularmovies.data.MovieContract;
-import com.example.ahmet.popularmovies.models.Movie;
-import com.example.ahmet.popularmovies.models.Review;
-import com.example.ahmet.popularmovies.models.Video;
-import com.example.ahmet.popularmovies.task.FetchReviewsTask;
-import com.example.ahmet.popularmovies.task.FetchVideosTask;
-import com.example.ahmet.popularmovies.utils.AsyncTaskCompleteListener;
+import com.example.ahmet.popularmovies.model.ApiResponse;
+import com.example.ahmet.popularmovies.model.Movie;
+import com.example.ahmet.popularmovies.model.Review;
+import com.example.ahmet.popularmovies.model.Video;
+import com.example.ahmet.popularmovies.rest.ApiClient;
+import com.example.ahmet.popularmovies.rest.ServiceGenerator;
 import com.example.ahmet.popularmovies.utils.HorizontalItemDecoration;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -40,7 +42,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 
 public class DetailActivity extends AppCompatActivity {
@@ -77,6 +82,7 @@ public class DetailActivity extends AppCompatActivity {
     private ReviewAdapter mReviewAdapter;
     private Target targetBackdrop;
     private Movie movie;
+    private ApiClient mApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,9 +90,9 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
 
-        movie = getIntent().getParcelableExtra(DETAIL_INTENT_KEY);
+        mApiClient = ServiceGenerator.createService(ApiClient.class);
 
-        collapsingToolbar = findViewById(R.id.collapsing_toolbar);
+        movie = getIntent().getParcelableExtra(DETAIL_INTENT_KEY);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(movie.getMovieTitle());
@@ -124,7 +130,7 @@ public class DetailActivity extends AppCompatActivity {
                 Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
                     @Override
                     public void onGenerated(@NonNull Palette palette) {
-                        int color = palette.getVibrantColor(R.attr.colorPrimary);
+                        int color = palette.getMutedColor(R.attr.colorPrimary) | 0xFF000000;
                         collapsingToolbar.setContentScrimColor(color);
                         collapsingToolbar.setStatusBarScrimColor(color);
                     }
@@ -140,11 +146,11 @@ public class DetailActivity extends AppCompatActivity {
             }
         };
         Picasso.with(this)
-                .load(movie.getBackdropPath())
+                .load("http://image.tmdb.org/t/p/w780" + movie.getBackdropPath())
                 .into(targetBackdrop);
 
         Picasso.with(this)
-                .load(movie.getPosterPath())
+                .load("http://image.tmdb.org/t/p/w342" + movie.getPosterPath())
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.error)
                 .into(posterIv);
@@ -174,6 +180,8 @@ public class DetailActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         videosRecyclerView.setLayoutManager(layoutManager);
+        videosRecyclerView.setHasFixedSize(true);
+        videosRecyclerView.setNestedScrollingEnabled(false);
 
         RecyclerView.ItemDecoration itemDecoration = new HorizontalItemDecoration(this);
         videosRecyclerView.addItemDecoration(itemDecoration);
@@ -182,24 +190,32 @@ public class DetailActivity extends AppCompatActivity {
         videosRecyclerView.setAdapter(mVideoAdapter);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_VIDEOS)) {
-            mVideoAdapter.addVideosList(savedInstanceState.<Video>getParcelableArrayList(BUNDLE_VIDEOS));
+            mVideoAdapter.addVideosList(savedInstanceState.
+                    <Video>getParcelableArrayList(BUNDLE_VIDEOS));
         } else {
+            Call<ApiResponse<Video>> call = mApiClient.getVideos(movie.getMovieId());
 
-            FetchVideosTask fetchVideosTask =
-                    new FetchVideosTask(new AsyncTaskCompleteListener<List<Video>>() {
-                        @Override
-                        public void onTaskStart() {
+            call.enqueue(new Callback<ApiResponse<Video>>() {
+                @Override
+                public void onResponse(Call<ApiResponse<Video>> call,
+                                       Response<ApiResponse<Video>> response) {
+                    try {
+                        List<Video> result = response.body().getResults();
+                        if (result != null) {
+                            mVideoAdapter.addVideosList(result);
                         }
+                    } catch (NullPointerException e) {
+                        Toast.makeText(DetailActivity.this,
+                                getString(R.string.connection_error), Toast.LENGTH_LONG).show();
+                    }
+                }
 
-                        @Override
-                        public void onTaskComplete(List<Video> result) {
-                            if (result != null && !result.isEmpty()) {
-
-                                mVideoAdapter.addVideosList(result);
-                            }
-                        }
-                    });
-            fetchVideosTask.execute(movie.getMovieId());
+                @Override
+                public void onFailure(Call<ApiResponse<Video>> call, Throwable t) {
+                    Toast.makeText(DetailActivity.this,
+                            getString(R.string.connection_error), Toast.LENGTH_LONG).show();
+                }
+            });
         }
     }
 
@@ -210,6 +226,8 @@ public class DetailActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         reviewsRecyclerView.setLayoutManager(layoutManager);
+        reviewsRecyclerView.setHasFixedSize(true);
+        reviewsRecyclerView.setNestedScrollingEnabled(false);
 
         RecyclerView.ItemDecoration itemDecoration = new HorizontalItemDecoration(this);
         reviewsRecyclerView.addItemDecoration(itemDecoration);
@@ -220,21 +238,29 @@ public class DetailActivity extends AppCompatActivity {
         if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_REVIEWS)) {
             mReviewAdapter.addReviewsList(savedInstanceState.<Review>getParcelableArrayList(BUNDLE_REVIEWS));
         } else {
+            Call<ApiResponse<Review>> call = mApiClient.getReviews(movie.getMovieId());
 
-            FetchReviewsTask fetchReviewsTask =
-                    new FetchReviewsTask(new AsyncTaskCompleteListener<List<Review>>() {
-                        @Override
-                        public void onTaskStart() {
+            call.enqueue(new Callback<ApiResponse<Review>>() {
+                @Override
+                public void onResponse(Call<ApiResponse<Review>> call,
+                                       Response<ApiResponse<Review>> response) {
+                    try {
+                        List<Review> result = response.body().getResults();
+                        if (result != null) {
+                            mReviewAdapter.addReviewsList(result);
                         }
+                    } catch (NullPointerException e) {
+                        Toast.makeText(DetailActivity.this,
+                                getString(R.string.connection_error), Toast.LENGTH_LONG).show();
+                    }
+                }
 
-                        @Override
-                        public void onTaskComplete(List<Review> result) {
-                            if (result != null) {
-                                mReviewAdapter.addReviewsList(result);
-                            }
-                        }
-                    });
-            fetchReviewsTask.execute(movie.getMovieId());
+                @Override
+                public void onFailure(Call<ApiResponse<Review>> call, Throwable t) {
+                    Toast.makeText(DetailActivity.this,
+                            getString(R.string.connection_error), Toast.LENGTH_LONG).show();
+                }
+            });
         }
     }
 
@@ -242,8 +268,7 @@ public class DetailActivity extends AppCompatActivity {
      * adds the movie to favorite or remove it if it already exists
      * adding favorite means adds it to sql database
      */
-    @OnClick(R.id.favorite_button)
-    public void onClickFavoriteButton() {
+    public void onClickFavoriteButton(View view) {
         String snackBarText;
         if (isFavorite) {
             getContentResolver().delete(
