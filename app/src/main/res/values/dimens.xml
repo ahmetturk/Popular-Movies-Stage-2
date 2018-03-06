@@ -6,7 +6,6 @@
 
     <dimen name="app_bar_layout_height">202.5dp</dimen>
     <dimen name="app_bar_scrim_height">100dp</dimen>
-    <dimen name="detail_page_bottom_margin">100dp</dimen>
     <dimen name="detail_text_size">16sp</dimen>
 
     <dimen name="poster_width">120dp</dimen>
@@ -36,4 +35,6 @@
 
     <dimen name="image_size">48dp</dimen>
     <dimen name="image_padding">12dp</dimen>
+
+    <dimen name="themoviedb">72dp</dimen>
 </resources>

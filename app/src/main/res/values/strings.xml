@@ -10,20 +10,17 @@
     <string name="action_sort">Sorting</string>
     <string name="action_share">Share</string>
 
-    <!--For Sort Preference-->
-    <string name="pref_sort_popular" translatable="false">popular</string>
-    <string name="pref_sort_highest_rated" translatable="false">top_rated</string>
-
     <!--For Sort Labels-->
     <string name="pref_sort_label_popular">Most Popular</string>
     <string name="pref_sort_label_highest_rated">Highest Rated</string>
     <string name="pref_sort_label_favorite">Favorites</string>
 
-    <string name="content_description_movie_item">Movie Poster</string>
-    <string name="content_description_video">Video</string>
-    <string name="content_description_favorite">Favorite</string>
-    <string name="content_description_less">Expand Less</string>
-    <string name="content_description_more">Expand More</string>
+    <string name="cd_movie_item">Movie Poster</string>
+    <string name="cd_video">Video</string>
+    <string name="cd_favorite">Favorite</string>
+    <string name="cd_less">Expand Less</string>
+    <string name="cd_more">Expand More</string>
+    <string name="cd_themoviedb">The Movie DB</string>
 
     <string name="language">en-US</string>
 
@@ -44,4 +41,6 @@
 
     <string name="add_favorite">Added to favorites</string>
     <string name="remove_favorite">Removed from favorites</string>
+
+    <string name="connection_error">Connection Error</string>
 </resources>

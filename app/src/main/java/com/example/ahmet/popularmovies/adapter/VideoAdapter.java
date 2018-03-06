@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ahmet.popularmovies.R;
-import com.example.ahmet.popularmovies.models.Video;
+import com.example.ahmet.popularmovies.model.Video;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoAdapter
 
     public void addVideosList(List<Video> videosList) {
         mList = videosList;
-        notifyItemRangeInserted(0, videosList.size());
+        notifyDataSetChanged();
     }
 
     public ArrayList<Video> getList() {

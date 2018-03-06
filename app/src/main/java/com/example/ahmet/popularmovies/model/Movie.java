@@ -1,7 +1,9 @@
-package com.example.ahmet.popularmovies.models;
+package com.example.ahmet.popularmovies.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.google.gson.annotations.SerializedName;
 
 public class Movie implements Parcelable {
     public static final Parcelable.Creator<Movie> CREATOR
@@ -15,13 +17,20 @@ public class Movie implements Parcelable {
         }
     };
 
-    private final String movieId;
-    private final String movieTitle;
-    private final String posterPath;
-    private final String plotSynopsis;
-    private final String userRating;
-    private final String releaseDate;
-    private final String backdropPath;
+    @SerializedName("id")
+    private String movieId;
+    @SerializedName("title")
+    private String movieTitle;
+    @SerializedName("poster_path")
+    private String posterPath;
+    @SerializedName("overview")
+    private String plotSynopsis;
+    @SerializedName("vote_average")
+    private String userRating;
+    @SerializedName("release_date")
+    private String releaseDate;
+    @SerializedName("backdrop_path")
+    private String backdropPath;
 
     public Movie(String movieId, String movieTitle, String posterPath, String plotSynopsis,
                  String userRating, String releaseDate, String backdropPath) {

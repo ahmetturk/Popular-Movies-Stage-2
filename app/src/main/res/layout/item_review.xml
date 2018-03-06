@@ -15,18 +15,16 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/review_author_height"
             android:layout_alignParentTop="true"
-            android:layout_marginEnd="@dimen/margin_medium"
+            android:layout_marginEnd="48dp"
             android:layout_marginLeft="@dimen/margin_medium"
-            android:layout_marginRight="@dimen/margin_medium"
+            android:layout_marginRight="48dp"
             android:layout_marginStart="@dimen/margin_medium"
             android:layout_marginTop="@dimen/margin_medium"
-            android:layout_toLeftOf="@id/less_iv"
-            android:layout_toStartOf="@id/less_iv"
-            android:maxLines="1"
+            android:ellipsize="none"
+            android:singleLine="true"
             android:textColor="@color/detailTextColor"
             android:textSize="@dimen/review_author_text_size"
-            tools:text="Ahmet Turk" />
-
+            tools:text="Ahmet Turk Ahmet Turk Ahmet" />
         <ImageView
             android:id="@+id/less_iv"
             android:layout_width="@dimen/image_size"
@@ -34,10 +32,8 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:layout_marginEnd="@dimen/margin_small"
-            android:layout_marginRight="@dimen/margin_small"
             android:layout_marginTop="@dimen/margin_small"
-            android:contentDescription="@string/content_description_less"
+            android:contentDescription="@string/cd_less"
             android:padding="@dimen/image_padding"
             android:visibility="gone"
             app:srcCompat="@drawable/ic_expand_less_black_24px" />
@@ -90,7 +86,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_below="@id/divider"
-            android:contentDescription="@string/content_description_more"
+            android:contentDescription="@string/cd_more"
             android:padding="@dimen/image_padding"
             app:srcCompat="@drawable/ic_expand_more_black_24px" />
 

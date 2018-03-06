@@ -1,4 +1,4 @@
-package com.example.ahmet.popularmovies;
+package com.example.ahmet.popularmovies.activity;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -22,12 +22,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.ahmet.popularmovies.R;
 import com.example.ahmet.popularmovies.adapter.MovieAdapter;
 import com.example.ahmet.popularmovies.data.MovieContract;
-import com.example.ahmet.popularmovies.models.Movie;
-import com.example.ahmet.popularmovies.task.FetchMoviesTask;
-import com.example.ahmet.popularmovies.utils.AsyncTaskCompleteListener;
+import com.example.ahmet.popularmovies.data.PopMovPreferences;
+import com.example.ahmet.popularmovies.model.ApiResponse;
+import com.example.ahmet.popularmovies.model.Movie;
+import com.example.ahmet.popularmovies.rest.ApiClient;
+import com.example.ahmet.popularmovies.rest.ServiceGenerator;
 import com.example.ahmet.popularmovies.utils.GridItemDecoration;
 import com.example.ahmet.popularmovies.utils.RecyclerViewScrollListener;
 import com.facebook.stetho.Stetho;
@@ -37,9 +41,12 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
-        implements AsyncTaskCompleteListener<List<Movie>>, LoaderManager.LoaderCallbacks<Cursor> {
+        implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int INDEX_MOVIE_ID = 0;
     private static final int INDEX_MOVIE_TITLE = 1;
@@ -58,9 +65,12 @@ public class MainActivity extends AppCompatActivity
             MovieContract.MovieEntry.COLUMN_RELEASE_DATE,
             MovieContract.MovieEntry.COLUMN_BACKDROP_PATH};
 
+    // popular = 0, highest rated = 1, favorites = 2
     private static final int FAVORITES = 2;
+    // Cursor Loader ID
     private static final int ID_FAVORITES_LOADER = 1;
 
+    // keys for savedInstanceState bundle
     private static final String BUNDLE_MOVIES = "movies";
     private static final String BUNDLE_PAGE = "page";
     private static final String BUNDLE_COUNT = "count";
@@ -73,10 +83,12 @@ public class MainActivity extends AppCompatActivity
     TextView statusTv;
     @BindView(R.id.movies_list)
     RecyclerView recyclerView;
+
     private MovieAdapter mMoviesAdapter;
     private RecyclerViewScrollListener mScrollListener;
     private Bundle mSavedInstanceState;
-    private GridLayoutManager gridLayoutManager;
+    private GridLayoutManager mGridLayoutManager;
+    private ApiClient mApiClient;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -84,17 +96,18 @@ public class MainActivity extends AppCompatActivity
         Stetho.initializeWithDefaults(this);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        mSavedInstanceState = savedInstanceState;
 
-        gridLayoutManager = new GridLayoutManager(this, numberOfColumns());
-        recyclerView.setLayoutManager(gridLayoutManager);
+        mApiClient = ServiceGenerator.createService(ApiClient.class);
+
+        mGridLayoutManager = new GridLayoutManager(this, numberOfColumns());
+        recyclerView.setLayoutManager(mGridLayoutManager);
 
         recyclerView.addItemDecoration(new GridItemDecoration(this));
 
         mMoviesAdapter = new MovieAdapter(this);
         recyclerView.setAdapter(mMoviesAdapter);
 
-        mScrollListener = new RecyclerViewScrollListener(gridLayoutManager) {
+        mScrollListener = new RecyclerViewScrollListener(mGridLayoutManager) {
             @Override
             public void onLoadMore(int page) {
                 int sorting = PopMovPreferences.getSorting(MainActivity.this);
@@ -117,10 +130,19 @@ public class MainActivity extends AppCompatActivity
         outState.putInt(BUNDLE_PAGE, mScrollListener.getPage());
         outState.putInt(BUNDLE_COUNT, mScrollListener.getCount());
         outState.putInt(BUNDLE_PREF, PopMovPreferences.getSorting(this));
-        outState.putParcelable(BUNDLE_RECYCLER, gridLayoutManager.onSaveInstanceState());
+        outState.putParcelable(BUNDLE_RECYCLER, mGridLayoutManager.onSaveInstanceState());
         super.onSaveInstanceState(outState);
     }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mSavedInstanceState = savedInstanceState;
+    }
+
+    /**
+     * Main reason is refresh the movie's favorite icon if it is selected in Detail Activity
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -131,6 +153,15 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * populates UI,
+     * first,
+     * it gets the selected sorting method from PopMovPreferences
+     * if it is favorites,
+     * it starts Cursor Loader
+     * else,
+     * it gets saved data or calls fetchNewMovies
+     */
     private void populateUI() {
         int sorting = PopMovPreferences.getSorting(this);
         mMoviesAdapter.clearMoviesList();
@@ -138,7 +169,7 @@ public class MainActivity extends AppCompatActivity
             // FAVORITES SELECTED
             recyclerView.clearOnScrollListeners();
             mSwipeRefreshLayout.setEnabled(false);
-            getSupportLoaderManager().restartLoader(ID_FAVORITES_LOADER, null, this);
+            getSupportLoaderManager().initLoader(ID_FAVORITES_LOADER, null, this);
         } else {
             if (mSavedInstanceState != null && mSavedInstanceState.getInt(BUNDLE_PREF) == sorting) {
                 // NOT FAVORITES SELECTED BUT THERE IS SAVED DATA
@@ -148,37 +179,70 @@ public class MainActivity extends AppCompatActivity
 
                 ArrayList<Movie> list = mSavedInstanceState.getParcelableArrayList(BUNDLE_MOVIES);
                 if ((list == null || list.isEmpty()) && !isOnline()) {
-                    statusTv.setText(R.string.no_internet);
-                    statusTv.setVisibility(View.VISIBLE);
+                    showNoInternetStatus();
                 }
                 mMoviesAdapter.addMoviesList(list);
-                gridLayoutManager.onRestoreInstanceState(mSavedInstanceState.getParcelable(BUNDLE_RECYCLER));
+                mGridLayoutManager
+                        .onRestoreInstanceState(mSavedInstanceState.getParcelable(BUNDLE_RECYCLER));
             } else {
                 // NOT FAVORITES SELECTED AND THERE IS NOT SAVED DATA
                 mScrollListener.resetState();
                 fetchNewMovies(1, sorting);
             }
             recyclerView.addOnScrollListener(mScrollListener);
-            mSwipeRefreshLayout.setEnabled(true);
         }
     }
 
-
     /**
-     * fetch movies from the tmdb API
+     * fetch movies from the TheMovieDB API
      *
      * @param page    the number of the page that will be fetched from API
      * @param sorting selected sorting method by user
      *                0 = most popular
      *                1 = highest rated
-     *                2 = favorites
      */
     private void fetchNewMovies(int page, int sorting) {
-        getSupportLoaderManager().destroyLoader(ID_FAVORITES_LOADER);
-        String sortingMethod = getResources().getStringArray(R.array.sort_pref_list)[sorting];
+        Call<ApiResponse<Movie>> call;
 
-        FetchMoviesTask moviesTask = new FetchMoviesTask(getString(R.string.language), this);
-        moviesTask.execute(sortingMethod, String.valueOf(page));
+        switch (sorting) {
+            case 0:
+                call = mApiClient.getPopularMovies(getString(R.string.language),
+                        String.valueOf(page));
+                break;
+
+            case 1:
+            default:
+                call = mApiClient.getTopRatedMovies(getString(R.string.language),
+                        String.valueOf(page));
+        }
+
+        if (!isOnline()) {
+            showNoInternetStatus();
+        }
+
+        call.enqueue(new Callback<ApiResponse<Movie>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Movie>> call, Response<ApiResponse<Movie>> response) {
+                try {
+                    List<Movie> result = response.body().getResults();
+                    if (result != null) {
+                        hideNoInternetStatus();
+                        mMoviesAdapter.addMoviesList(result);
+                    }
+                } catch (NullPointerException e) {
+                    Toast.makeText(MainActivity.this,
+                            getString(R.string.connection_error), Toast.LENGTH_LONG).show();
+                } finally {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<Movie>> call, Throwable t) {
+                Toast.makeText(MainActivity.this,
+                        getString(R.string.connection_error), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override
@@ -197,6 +261,9 @@ public class MainActivity extends AppCompatActivity
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i < 2) {
+                    getSupportLoaderManager().destroyLoader(ID_FAVORITES_LOADER);
+                }
                 PopMovPreferences.setSorting(MainActivity.this, i);
                 populateUI();
             }
@@ -217,7 +284,6 @@ public class MainActivity extends AppCompatActivity
     private int numberOfColumns() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        // You can change this divider to adjust the size of the poster
         int widthDivider = 400;
         int width = displayMetrics.widthPixels;
         int nColumns = width / widthDivider;
@@ -231,7 +297,9 @@ public class MainActivity extends AppCompatActivity
      * @return true if the device has internet connection, false otherwise
      */
     private boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
         if (cm != null) {
             NetworkInfo netInfo = cm.getActiveNetworkInfo();
             return netInfo != null && netInfo.isConnectedOrConnecting();
@@ -239,21 +307,21 @@ public class MainActivity extends AppCompatActivity
         return false;
     }
 
-    @Override
-    public void onTaskStart() {
-        if (!isOnline()) {
-            statusTv.setText(R.string.no_internet);
-            statusTv.setVisibility(View.VISIBLE);
-        }
+    /**
+     * shows no internet text view and enables swipe refresh
+     */
+    private void showNoInternetStatus() {
+        statusTv.setText(R.string.no_internet);
+        statusTv.setVisibility(View.VISIBLE);
+        mSwipeRefreshLayout.setEnabled(true);
     }
 
-    @Override
-    public void onTaskComplete(List<Movie> result) {
-        mSwipeRefreshLayout.setRefreshing(false);
-        if (result != null) {
-            statusTv.setVisibility(View.GONE);
-            mMoviesAdapter.addMoviesList(result);
-        }
+    /**
+     * hides no internet text view and disables swipe refresh
+     */
+    private void hideNoInternetStatus() {
+        statusTv.setVisibility(View.GONE);
+        mSwipeRefreshLayout.setEnabled(false);
     }
 
     @NonNull
@@ -297,7 +365,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (mSavedInstanceState != null) {
-            gridLayoutManager.onRestoreInstanceState(mSavedInstanceState.getParcelable(BUNDLE_RECYCLER));
+            mGridLayoutManager
+                    .onRestoreInstanceState(mSavedInstanceState.getParcelable(BUNDLE_RECYCLER));
         }
     }
 

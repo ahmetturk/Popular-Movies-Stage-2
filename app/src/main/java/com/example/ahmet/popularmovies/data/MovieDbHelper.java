@@ -36,10 +36,10 @@ class MovieDbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         // check the old version then upgrade the database according to it
-        if (oldVersion < 2) {
+        //if (oldVersion < 2) {
             // for example adding a new column on version 2
             // sqLiteDatabase.execSQL("ALTER TABLE " + MovieEntry.TABLE_NAME
             // + " ADD COLUMN " + MovieEntry.NEW_COLUMN + " TEXT;");
-        }
+        //}
     }
 }
