@@ -35,6 +35,4 @@
 
     <dimen name="image_size">48dp</dimen>
     <dimen name="image_padding">12dp</dimen>
-
-    <dimen name="themoviedb">72dp</dimen>
 </resources>

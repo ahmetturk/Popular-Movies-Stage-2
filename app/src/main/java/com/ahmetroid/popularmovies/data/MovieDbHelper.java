@@ -1,10 +1,10 @@
-package com.example.ahmet.popularmovies.data;
+package com.ahmetroid.popularmovies.data;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.ahmet.popularmovies.data.MovieContract.MovieEntry;
+import com.ahmetroid.popularmovies.data.MovieContract.MovieEntry;
 
 class MovieDbHelper extends SQLiteOpenHelper {
 
@@ -37,9 +37,9 @@ class MovieDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         // check the old version then upgrade the database according to it
         //if (oldVersion < 2) {
-            // for example adding a new column on version 2
-            // sqLiteDatabase.execSQL("ALTER TABLE " + MovieEntry.TABLE_NAME
-            // + " ADD COLUMN " + MovieEntry.NEW_COLUMN + " TEXT;");
+        // for example adding a new column on version 2
+        // sqLiteDatabase.execSQL("ALTER TABLE " + MovieEntry.TABLE_NAME
+        // + " ADD COLUMN " + MovieEntry.NEW_COLUMN + " TEXT;");
         //}
     }
 }

@@ -1,4 +1,4 @@
-package com.example.ahmet.popularmovies.model;
+package com.ahmetroid.popularmovies.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

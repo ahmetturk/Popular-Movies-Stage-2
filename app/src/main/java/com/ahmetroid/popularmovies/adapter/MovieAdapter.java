@@ -1,4 +1,4 @@
-package com.example.ahmet.popularmovies.adapter;
+package com.ahmetroid.popularmovies.adapter;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -13,11 +13,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.ahmet.popularmovies.R;
-import com.example.ahmet.popularmovies.activity.DetailActivity;
-import com.example.ahmet.popularmovies.data.MovieContract;
-import com.example.ahmet.popularmovies.data.PopMovPreferences;
-import com.example.ahmet.popularmovies.model.Movie;
+import com.ahmetroid.popularmovies.R;
+import com.ahmetroid.popularmovies.activity.DetailActivity;
+import com.ahmetroid.popularmovies.activity.MainActivity;
+import com.ahmetroid.popularmovies.data.MovieContract;
+import com.ahmetroid.popularmovies.data.PopMovPreferences;
+import com.ahmetroid.popularmovies.model.Movie;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -31,10 +32,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     private final Context mContext;
     private List<Movie> mList;
+    private ListenerMovieAdapter mListener;
 
 
-    public MovieAdapter(Context context) {
+    public MovieAdapter(Context context, ListenerMovieAdapter listener) {
         this.mContext = context;
+        this.mListener = listener;
     }
 
     @Override
@@ -114,6 +117,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         return (ArrayList<Movie>) mList;
     }
 
+    public interface ListenerMovieAdapter {
+        void onEmpty();
+    }
+
     class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.movie_title_tv)
         TextView movieTitleTv;
@@ -153,7 +160,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         @OnClick(R.id.favorite_iv)
         public void onClickFavoriteButton(View view) {
             String snackBarText;
-            Movie movie = mList.get(getAdapterPosition());
+            int position = getAdapterPosition();
+            Movie movie = mList.get(position);
+
             if (isFavorite) {
                 mContext.getContentResolver().delete(
                         MovieContract.MovieEntry.buildMovieUriWithId(movie.getMovieId()),
@@ -162,6 +171,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                 isFavorite = false;
                 favoriteIv.setImageResource(R.drawable.ic_star_border_white_24px);
                 snackBarText = mContext.getString(R.string.remove_favorite);
+
+                if (PopMovPreferences.getSorting(mContext) == MainActivity.FAVORITES) {
+                    mList.remove(position);
+                    notifyItemRemoved(position);
+                    if (mList.isEmpty()) {
+                        mListener.onEmpty();
+                    }
+                }
+
             } else {
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.getMovieId());

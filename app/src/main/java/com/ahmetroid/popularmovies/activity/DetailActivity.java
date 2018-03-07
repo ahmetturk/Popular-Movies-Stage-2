@@ -1,4 +1,4 @@
-package com.example.ahmet.popularmovies.activity;
+package com.ahmetroid.popularmovies.activity;
 
 import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
@@ -24,17 +24,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.ahmet.popularmovies.R;
-import com.example.ahmet.popularmovies.adapter.ReviewAdapter;
-import com.example.ahmet.popularmovies.adapter.VideoAdapter;
-import com.example.ahmet.popularmovies.data.MovieContract;
-import com.example.ahmet.popularmovies.model.ApiResponse;
-import com.example.ahmet.popularmovies.model.Movie;
-import com.example.ahmet.popularmovies.model.Review;
-import com.example.ahmet.popularmovies.model.Video;
-import com.example.ahmet.popularmovies.rest.ApiClient;
-import com.example.ahmet.popularmovies.rest.ServiceGenerator;
-import com.example.ahmet.popularmovies.utils.HorizontalItemDecoration;
+import com.ahmetroid.popularmovies.R;
+import com.ahmetroid.popularmovies.adapter.ReviewAdapter;
+import com.ahmetroid.popularmovies.adapter.VideoAdapter;
+import com.ahmetroid.popularmovies.data.MovieContract;
+import com.ahmetroid.popularmovies.model.ApiResponse;
+import com.ahmetroid.popularmovies.model.Movie;
+import com.ahmetroid.popularmovies.model.Review;
+import com.ahmetroid.popularmovies.model.Video;
+import com.ahmetroid.popularmovies.rest.ApiClient;
+import com.ahmetroid.popularmovies.rest.ServiceGenerator;
+import com.ahmetroid.popularmovies.utils.HorizontalItemDecoration;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -45,7 +45,6 @@ import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 
 
 public class DetailActivity extends AppCompatActivity {
@@ -307,16 +306,14 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.share) {
-            String shareText = mVideoAdapter.getShareUrl();
-            if (shareText != null && !shareText.isEmpty()) {
-                ShareCompat.IntentBuilder intentBuilder = ShareCompat.IntentBuilder.from(this)
-                        .setText(shareText)
-                        .setType("text/plain");
-                try {
-                    intentBuilder.startChooser();
-                } catch (ActivityNotFoundException e) {
-                    Toast.makeText(this, R.string.no_app, Toast.LENGTH_LONG).show();
-                }
+            String shareText = "https://www.themoviedb.org/movie/" + movie.getMovieId();
+            ShareCompat.IntentBuilder intentBuilder = ShareCompat.IntentBuilder.from(this)
+                    .setText(shareText)
+                    .setType("text/plain");
+            try {
+                intentBuilder.startChooser();
+            } catch (ActivityNotFoundException e) {
+                Toast.makeText(this, R.string.no_app, Toast.LENGTH_LONG).show();
             }
         }
         return super.onOptionsItemSelected(item);

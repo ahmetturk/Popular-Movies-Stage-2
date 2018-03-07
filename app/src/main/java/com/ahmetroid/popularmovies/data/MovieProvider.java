@@ -1,4 +1,4 @@
-package com.example.ahmet.popularmovies.data;
+package com.ahmetroid.popularmovies.data;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -128,10 +128,6 @@ public class MovieProvider extends ContentProvider {
 
             default:
                 throw new UnsupportedOperationException("Delete unknown uri: " + uri);
-        }
-
-        if (numRowsDeleted != 0) {
-            getContext().getContentResolver().notifyChange(uri, null);
         }
 
         return numRowsDeleted;

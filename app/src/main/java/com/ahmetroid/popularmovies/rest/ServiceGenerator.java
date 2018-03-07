@@ -1,4 +1,4 @@
-package com.example.ahmet.popularmovies.rest;
+package com.ahmetroid.popularmovies.rest;
 
 import java.io.IOException;
 
@@ -10,7 +10,7 @@ import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.example.ahmet.popularmovies.BuildConfig.API_KEY;
+import static com.ahmetroid.popularmovies.BuildConfig.API_KEY;
 
 public class ServiceGenerator {
 

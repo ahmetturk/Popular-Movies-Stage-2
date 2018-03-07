@@ -1,6 +1,7 @@
-package com.example.ahmet.popularmovies.activity;
+package com.ahmetroid.popularmovies.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -11,6 +12,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,20 +22,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.ahmet.popularmovies.R;
-import com.example.ahmet.popularmovies.adapter.MovieAdapter;
-import com.example.ahmet.popularmovies.data.MovieContract;
-import com.example.ahmet.popularmovies.data.PopMovPreferences;
-import com.example.ahmet.popularmovies.model.ApiResponse;
-import com.example.ahmet.popularmovies.model.Movie;
-import com.example.ahmet.popularmovies.rest.ApiClient;
-import com.example.ahmet.popularmovies.rest.ServiceGenerator;
-import com.example.ahmet.popularmovies.utils.GridItemDecoration;
-import com.example.ahmet.popularmovies.utils.RecyclerViewScrollListener;
+import com.ahmetroid.popularmovies.R;
+import com.ahmetroid.popularmovies.adapter.MovieAdapter;
+import com.ahmetroid.popularmovies.data.MovieContract;
+import com.ahmetroid.popularmovies.data.PopMovPreferences;
+import com.ahmetroid.popularmovies.model.ApiResponse;
+import com.ahmetroid.popularmovies.model.Movie;
+import com.ahmetroid.popularmovies.rest.ApiClient;
+import com.ahmetroid.popularmovies.rest.ServiceGenerator;
+import com.ahmetroid.popularmovies.utils.GridItemDecoration;
+import com.ahmetroid.popularmovies.utils.RecyclerViewScrollListener;
 import com.facebook.stetho.Stetho;
 
 import java.util.ArrayList;
@@ -46,8 +49,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<Cursor> {
+        implements LoaderManager.LoaderCallbacks<Cursor>, MovieAdapter.ListenerMovieAdapter {
 
+    // popular = 0, highest rated = 1, favorites = 2
+    public static final int FAVORITES = 2;
     private static final int INDEX_MOVIE_ID = 0;
     private static final int INDEX_MOVIE_TITLE = 1;
     private static final int INDEX_POSTER_PATH = 2;
@@ -55,7 +60,6 @@ public class MainActivity extends AppCompatActivity
     private static final int INDEX_USER_RATING = 4;
     private static final int INDEX_RELEASE_DATE = 5;
     private static final int INDEX_BACKDROP_PATH = 6;
-
     private static final String[] MOVIE_PROJECTION = {
             MovieContract.MovieEntry.COLUMN_MOVIE_ID,
             MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
@@ -64,9 +68,6 @@ public class MainActivity extends AppCompatActivity
             MovieContract.MovieEntry.COLUMN_USER_RATING,
             MovieContract.MovieEntry.COLUMN_RELEASE_DATE,
             MovieContract.MovieEntry.COLUMN_BACKDROP_PATH};
-
-    // popular = 0, highest rated = 1, favorites = 2
-    private static final int FAVORITES = 2;
     // Cursor Loader ID
     private static final int ID_FAVORITES_LOADER = 1;
 
@@ -79,8 +80,10 @@ public class MainActivity extends AppCompatActivity
 
     @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout mSwipeRefreshLayout;
-    @BindView(R.id.status)
+    @BindView(R.id.status_tv)
     TextView statusTv;
+    @BindView(R.id.status_iv)
+    ImageView statusIv;
     @BindView(R.id.movies_list)
     RecyclerView recyclerView;
 
@@ -97,6 +100,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("Movies");
+
         mApiClient = ServiceGenerator.createService(ApiClient.class);
 
         mGridLayoutManager = new GridLayoutManager(this, numberOfColumns());
@@ -104,7 +110,7 @@ public class MainActivity extends AppCompatActivity
 
         recyclerView.addItemDecoration(new GridItemDecoration(this));
 
-        mMoviesAdapter = new MovieAdapter(this);
+        mMoviesAdapter = new MovieAdapter(this, this);
         recyclerView.setAdapter(mMoviesAdapter);
 
         mScrollListener = new RecyclerViewScrollListener(mGridLayoutManager) {
@@ -226,7 +232,8 @@ public class MainActivity extends AppCompatActivity
                 try {
                     List<Movie> result = response.body().getResults();
                     if (result != null) {
-                        hideNoInternetStatus();
+                        hideStatus();
+                        mSwipeRefreshLayout.setEnabled(false);
                         mMoviesAdapter.addMoviesList(result);
                     }
                 } catch (NullPointerException e) {
@@ -276,6 +283,17 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     /**
      * calculates number of columns
      *
@@ -311,17 +329,29 @@ public class MainActivity extends AppCompatActivity
      * shows no internet text view and enables swipe refresh
      */
     private void showNoInternetStatus() {
+        statusIv.setImageResource(R.drawable.ic_signal_wifi_off_white_24px);
+        statusIv.setVisibility(View.VISIBLE);
         statusTv.setText(R.string.no_internet);
         statusTv.setVisibility(View.VISIBLE);
         mSwipeRefreshLayout.setEnabled(true);
     }
 
     /**
-     * hides no internet text view and disables swipe refresh
+     * shows no favorite text view
      */
-    private void hideNoInternetStatus() {
-        statusTv.setVisibility(View.GONE);
-        mSwipeRefreshLayout.setEnabled(false);
+    private void showNoFavoriteStatus() {
+        statusIv.setImageResource(R.drawable.ic_star_border_white_24px);
+        statusIv.setVisibility(View.VISIBLE);
+        statusTv.setText(R.string.no_favorite);
+        statusTv.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * hides status text view
+     */
+    private void hideStatus() {
+        statusIv.setVisibility(View.INVISIBLE);
+        statusTv.setVisibility(View.INVISIBLE);
     }
 
     @NonNull
@@ -343,9 +373,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
-        mMoviesAdapter.clearMoviesList();
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
                 mMoviesAdapter.addMovie(new Movie(
                         cursor.getString(INDEX_MOVIE_ID),
                         cursor.getString(INDEX_MOVIE_TITLE),
@@ -354,23 +383,30 @@ public class MainActivity extends AppCompatActivity
                         cursor.getString(INDEX_USER_RATING),
                         cursor.getString(INDEX_RELEASE_DATE),
                         cursor.getString(INDEX_BACKDROP_PATH)));
-            } while (cursor.moveToNext());
+            }
+        }
+
+        if (mMoviesAdapter.getItemCount() == 0 && mSavedInstanceState != null
+                && mSavedInstanceState.getInt(BUNDLE_PREF) == FAVORITES) {
+            ArrayList<Movie> list = mSavedInstanceState.getParcelableArrayList(BUNDLE_MOVIES);
+            mMoviesAdapter.addMoviesList(list);
+            mGridLayoutManager
+                    .onRestoreInstanceState(mSavedInstanceState.getParcelable(BUNDLE_RECYCLER));
         }
 
         if (mMoviesAdapter.getItemCount() == 0) {
-            statusTv.setText(R.string.no_favorite);
-            statusTv.setVisibility(View.VISIBLE);
+            showNoFavoriteStatus();
         } else {
-            statusTv.setVisibility(View.GONE);
-        }
-
-        if (mSavedInstanceState != null) {
-            mGridLayoutManager
-                    .onRestoreInstanceState(mSavedInstanceState.getParcelable(BUNDLE_RECYCLER));
+            hideStatus();
         }
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+    }
+
+    @Override
+    public void onEmpty() {
+        showNoFavoriteStatus();
     }
 }

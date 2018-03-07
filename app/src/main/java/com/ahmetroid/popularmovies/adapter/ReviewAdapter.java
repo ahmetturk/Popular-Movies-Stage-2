@@ -1,4 +1,4 @@
-package com.example.ahmet.popularmovies.adapter;
+package com.ahmetroid.popularmovies.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.ahmet.popularmovies.R;
-import com.example.ahmet.popularmovies.model.Review;
+import com.ahmetroid.popularmovies.R;
+import com.ahmetroid.popularmovies.model.Review;
 
 import java.util.ArrayList;
 import java.util.List;

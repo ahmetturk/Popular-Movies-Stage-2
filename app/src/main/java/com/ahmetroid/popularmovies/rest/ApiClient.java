@@ -1,9 +1,9 @@
-package com.example.ahmet.popularmovies.rest;
+package com.ahmetroid.popularmovies.rest;
 
-import com.example.ahmet.popularmovies.model.ApiResponse;
-import com.example.ahmet.popularmovies.model.Movie;
-import com.example.ahmet.popularmovies.model.Review;
-import com.example.ahmet.popularmovies.model.Video;
+import com.ahmetroid.popularmovies.model.ApiResponse;
+import com.ahmetroid.popularmovies.model.Movie;
+import com.ahmetroid.popularmovies.model.Review;
+import com.ahmetroid.popularmovies.model.Video;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

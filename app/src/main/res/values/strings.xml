@@ -9,6 +9,7 @@
     <!--Menu item name for sorting spinner-->
     <string name="action_sort">Sorting</string>
     <string name="action_share">Share</string>
+    <string name="action_settings">Settings</string>
 
     <!--For Sort Labels-->
     <string name="pref_sort_label_popular">Most Popular</string>
@@ -20,7 +21,7 @@
     <string name="cd_favorite">Favorite</string>
     <string name="cd_less">Expand Less</string>
     <string name="cd_more">Expand More</string>
-    <string name="cd_themoviedb">The Movie DB</string>
+    <string name="cd_status">Status</string>
 
     <string name="language">en-US</string>
 
@@ -32,8 +33,8 @@
     <string name="videos">Videos</string>
     <string name="reviews">Reviews</string>
 
-    <string name="no_internet">No internet connection Swipe to refresh</string>
-    <string name="no_favorite">Select a movie as favorite\nIt will be shown here</string>
+    <string name="no_internet">No internet connection, swipe to refresh</string>
+    <string name="no_favorite">To add a movie to favorites, tap star</string>
     <string name="no_app">There is not any sharing app installed on device</string>
 
     <string name="view_more">VIEW MORE</string>
@@ -43,4 +44,7 @@
     <string name="remove_favorite">Removed from favorites</string>
 
     <string name="connection_error">Connection Error</string>
+
+    <!--For About Activity-->
+    <string name="description">All movie data is provided by The Movie DB.\nDeveloped by Ahmet Turk</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.ahmet.popularmovies.adapter;
+package com.ahmetroid.popularmovies.adapter;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -12,8 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.ahmet.popularmovies.R;
-import com.example.ahmet.popularmovies.model.Video;
+import com.ahmetroid.popularmovies.R;
+import com.ahmetroid.popularmovies.model.Video;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -68,10 +68,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoAdapter
 
     public ArrayList<Video> getList() {
         return (ArrayList<Video>) mList;
-    }
-
-    public String getShareUrl() {
-        return "https://www.youtube.com/watch?v=" + mList.get(0).getVideoUrl();
     }
 
     class VideoAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

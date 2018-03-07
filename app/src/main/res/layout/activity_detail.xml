@@ -57,7 +57,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="200dp">
 
             <include
                 android:id="@+id/movie_details"
@@ -70,18 +71,6 @@
             <include
                 android:id="@+id/movie_reviews"
                 layout="@layout/detail_review" />
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/margin_medium"
-                android:layout_marginEnd="@dimen/themoviedb"
-                android:layout_marginLeft="@dimen/themoviedb"
-                android:layout_marginRight="@dimen/themoviedb"
-                android:layout_marginStart="@dimen/themoviedb"
-                android:layout_marginTop="@dimen/margin_medium"
-                android:contentDescription="@string/cd_themoviedb"
-                app:srcCompat="@drawable/ic_themoviedb" />
 
         </LinearLayout>
 

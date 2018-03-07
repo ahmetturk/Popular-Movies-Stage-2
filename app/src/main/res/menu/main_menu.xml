@@ -6,4 +6,10 @@
         android:title="@string/action_sort"
         app:actionViewClass="android.widget.Spinner"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_more_vert_24dp"
+        android:title="@string/action_settings"
+        app:showAsAction="ifRoom" />
 </menu>

@@ -1,10 +1,10 @@
-package com.example.ahmet.popularmovies.data;
+package com.ahmetroid.popularmovies.data;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
 
 public class MovieContract {
-    static final String CONTENT_AUTHORITY = "com.example.ahmet.popularmovies";
+    static final String CONTENT_AUTHORITY = "com.ahmetroid.popularmovies";
     static final String PATH_MOVIES = "movies";
     private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 

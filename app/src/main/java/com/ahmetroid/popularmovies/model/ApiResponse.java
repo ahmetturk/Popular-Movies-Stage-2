@@ -1,4 +1,4 @@
-package com.example.ahmet.popularmovies.model;
+package com.ahmetroid.popularmovies.model;
 
 import com.google.gson.annotations.SerializedName;
 

@@ -1,4 +1,4 @@
-package com.example.ahmet.popularmovies.utils;
+package com.ahmetroid.popularmovies.utils;
 
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;

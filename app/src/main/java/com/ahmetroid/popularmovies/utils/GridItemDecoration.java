@@ -1,4 +1,4 @@
-package com.example.ahmet.popularmovies.utils;
+package com.ahmetroid.popularmovies.utils;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -6,7 +6,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.example.ahmet.popularmovies.R;
+import com.ahmetroid.popularmovies.R;
 
 public class GridItemDecoration extends RecyclerView.ItemDecoration {
 

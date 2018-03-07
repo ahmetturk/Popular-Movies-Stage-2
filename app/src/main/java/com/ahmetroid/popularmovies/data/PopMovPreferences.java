@@ -1,10 +1,10 @@
-package com.example.ahmet.popularmovies.data;
+package com.ahmetroid.popularmovies.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.example.ahmet.popularmovies.R;
+import com.ahmetroid.popularmovies.R;
 
 public class PopMovPreferences {
     public static int getSorting(Context context) {
