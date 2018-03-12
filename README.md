@@ -11,8 +11,7 @@ The app has two main screens
   - To add a movie to favorites, there is a Floating Action Button 
   - To share the video of movie, there is Share Button on top left corner
   
-  <a href='https://play.google.com/store/apps/details?id=com.ahmetroid.popularmovies'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width="240px"/></a>
-  
+<a href='https://play.google.com/store/apps/details?id=com.ahmetroid.popularmovies'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width="240px"/></a> 
 ## Requirements
 - Android Studio 3.0.1
 - Build Tools Version 27.0.3
