@@ -1,87 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <ImageView
-        android:id="@+id/poster"
-        android:layout_width="@dimen/poster_width"
-        android:layout_height="@dimen/poster_height"
-        android:layout_marginLeft="@dimen/margin_medium"
-        android:layout_marginStart="@dimen/margin_medium"
-        android:layout_marginTop="@dimen/margin_medium"
-        android:contentDescription="@string/cd_movie_item"
-        android:scaleType="fitCenter"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <data>
 
-    <TextView
-        android:id="@+id/movieTitleTv"
-        android:layout_width="0dp"
+        <variable
+            name="movie"
+            type="com.ahmetroid.popularmovies.model.Movie" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/margin_medium"
-        android:layout_marginLeft="@dimen/margin_medium"
-        android:layout_marginRight="@dimen/margin_medium"
-        android:layout_marginStart="@dimen/margin_medium"
-        android:layout_marginTop="@dimen/margin_medium"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/poster"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="The Maze Runner" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <TextView
-        android:id="@+id/releaseDateLabel"
-        style="@style/DetailLabel"
-        android:text="@string/release_date"
-        app:layout_constraintStart_toEndOf="@+id/poster"
-        app:layout_constraintTop_toBottomOf="@+id/movieTitleTv" />
+        <ImageView
+            android:id="@+id/poster"
+            android:layout_width="@dimen/poster_width"
+            android:layout_height="@dimen/poster_height"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:contentDescription="@string/cd_movie_item"
+            android:scaleType="fitCenter"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/releaseDateTv"
-        style="@style/DetailText"
-        app:layout_constraintStart_toEndOf="@+id/poster"
-        app:layout_constraintTop_toBottomOf="@+id/releaseDateLabel"
-        tools:text="2014-09-10" />
+        <TextView
+            android:id="@+id/movieTitleTv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_medium"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:text="@{movie.movieTitle}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/poster"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="The Maze Runner" />
 
-    <TextView
-        android:id="@+id/userRatingLabel"
-        style="@style/DetailLabel"
-        android:text="@string/user_rating"
-        app:layout_constraintStart_toEndOf="@+id/poster"
-        app:layout_constraintTop_toBottomOf="@+id/releaseDateTv" />
+        <TextView
+            android:id="@+id/releaseDateLabel"
+            style="@style/DetailLabel"
+            android:text="@string/release_date"
+            app:layout_constraintStart_toEndOf="@+id/poster"
+            app:layout_constraintTop_toBottomOf="@+id/movieTitleTv" />
 
-    <TextView
-        android:id="@+id/userRatingTv"
-        style="@style/DetailText"
-        app:layout_constraintStart_toEndOf="@+id/poster"
-        app:layout_constraintTop_toBottomOf="@+id/userRatingLabel"
-        tools:text="7/10" />
+        <TextView
+            android:id="@+id/releaseDateTv"
+            style="@style/DetailText"
+            android:text="@{movie.releaseDate}"
+            app:layout_constraintStart_toEndOf="@+id/poster"
+            app:layout_constraintTop_toBottomOf="@+id/releaseDateLabel"
+            tools:text="2014-09-10" />
 
-    <TextView
-        android:id="@+id/plotSynopsisLabel"
-        style="@style/DetailLabel"
-        android:text="@string/plot_synopsis"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/poster" />
+        <TextView
+            android:id="@+id/userRatingLabel"
+            style="@style/DetailLabel"
+            android:text="@string/user_rating"
+            app:layout_constraintStart_toEndOf="@+id/poster"
+            app:layout_constraintTop_toBottomOf="@+id/releaseDateTv" />
 
-    <TextView
-        android:id="@+id/plotSynopsisTv"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/margin_medium"
-        android:layout_marginLeft="@dimen/margin_medium"
-        android:layout_marginRight="@dimen/margin_medium"
-        android:layout_marginStart="@dimen/margin_medium"
-        android:textColor="@color/detailTextColor"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/plotSynopsisLabel" />
+        <TextView
+            android:id="@+id/userRatingTv"
+            style="@style/DetailText"
+            android:text="@{@string/user_rating_text(movie.userRating)}"
+            app:layout_constraintStart_toEndOf="@+id/poster"
+            app:layout_constraintTop_toBottomOf="@+id/userRatingLabel"
+            tools:text="7/10" />
 
-</android.support.constraint.ConstraintLayout>
+        <TextView
+            android:id="@+id/plotSynopsisLabel"
+            style="@style/DetailLabel"
+            android:text="@string/plot_synopsis"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/poster" />
 
+        <TextView
+            android:id="@+id/plotSynopsisTv"
+            style="@style/DetailText"
+            android:layout_width="0dp"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:text="@{movie.plotSynopsis}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/plotSynopsisLabel" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

@@ -10,30 +10,24 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.ahmetroid.popularmovies.R;
 import com.ahmetroid.popularmovies.activity.DetailActivity;
 import com.ahmetroid.popularmovies.activity.MainActivity;
 import com.ahmetroid.popularmovies.data.MovieContract;
 import com.ahmetroid.popularmovies.data.PopMovPreferences;
+import com.ahmetroid.popularmovies.databinding.ItemMovieBinding;
 import com.ahmetroid.popularmovies.model.Movie;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
     private final Context mContext;
     private List<Movie> mList;
     private ListenerMovieAdapter mListener;
-
 
     public MovieAdapter(Context context, ListenerMovieAdapter listener) {
         this.mContext = context;
@@ -43,40 +37,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     @Override
     @NonNull
     public MovieAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext)
-                .inflate(R.layout.item_movie, parent, false);
-        return new MovieAdapterViewHolder(view);
+        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+        ItemMovieBinding binding = ItemMovieBinding.inflate(layoutInflater, parent, false);
+        return new MovieAdapterViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MovieAdapterViewHolder holder, int position) {
         Movie movie = mList.get(position);
-
-        holder.movieTitleTv.setText(movie.getMovieTitle());
-        Picasso.with(mContext)
-                .load("http://image.tmdb.org/t/p/w342" + movie.getPosterPath())
-                .placeholder(R.drawable.placeholder)
-                .error(R.drawable.error)
-                .into(holder.movieItemIv);
-
-        Cursor cursor = mContext.getContentResolver().query(
-                MovieContract.MovieEntry.buildMovieUriWithId(movie.getMovieId()),
-                new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},
-                null,
-                null,
-                null);
-
-        if (cursor != null && cursor.moveToNext()) {
-            holder.favoriteIv.setImageResource(R.drawable.ic_star_white_24px);
-            holder.isFavorite = true;
-        } else {
-            holder.favoriteIv.setImageResource(R.drawable.ic_star_border_white_24px);
-            holder.isFavorite = false;
-        }
-
-        if (cursor != null) {
-            cursor.close();
-        }
+        holder.bind(movie);
     }
 
     @Override
@@ -121,33 +90,55 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         void onEmpty();
     }
 
-    class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        @BindView(R.id.movie_title_tv)
-        TextView movieTitleTv;
-        @BindView(R.id.movie_item_iv)
-        ImageView movieItemIv;
-        @BindView(R.id.favorite_iv)
-        ImageView favoriteIv;
-        boolean isFavorite;
+    public class MovieAdapterViewHolder extends RecyclerView.ViewHolder {
 
-        MovieAdapterViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
-            view.setOnClickListener(this);
+        public ItemMovieBinding binding;
+        public boolean isFavorite;
+
+        MovieAdapterViewHolder(ItemMovieBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+
+        public void bind(Movie movie) {
+            binding.setMovie(movie);
+            binding.setPresenter(this);
+
+            Picasso.with(mContext)
+                    .load("http://image.tmdb.org/t/p/w342" + movie.getPosterPath())
+                    .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.error)
+                    .into(binding.movieItemIv);
+
+            Cursor cursor = mContext.getContentResolver().query(
+                    MovieContract.MovieEntry.buildMovieUriWithId(movie.getMovieId()),
+                    new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},
+                    null,
+                    null,
+                    null);
+
+            if (cursor != null && cursor.moveToNext()) {
+                binding.favoriteIv.setImageResource(R.drawable.ic_star_white_24px);
+                isFavorite = true;
+            } else {
+                binding.favoriteIv.setImageResource(R.drawable.ic_star_border_white_24px);
+                isFavorite = false;
+            }
+
+            if (cursor != null) {
+                cursor.close();
+            }
         }
 
         /**
          * starts detail activity for this movie
-         * <p>
          * setChangedMovie is called to refresh the favorite star icon of this movie
          * when returning back to main activity
          */
-        @Override
-        public void onClick(View v) {
+        public void openMovieDetail(Movie movie) {
             int movieNumber = getAdapterPosition();
             PopMovPreferences.setChangedMovie(mContext, movieNumber);
 
-            Movie movie = mList.get(movieNumber);
             Intent intent = new Intent(mContext, DetailActivity.class);
             intent.putExtra(DetailActivity.DETAIL_INTENT_KEY, movie);
             mContext.startActivity(intent);
@@ -157,8 +148,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
          * adds the movie to favorite or remove it if it already exists
          * adding favorite means adds it to sql database
          */
-        @OnClick(R.id.favorite_iv)
-        public void onClickFavoriteButton(View view) {
+        public void onClickFavorite(View view) {
             String snackBarText;
             int position = getAdapterPosition();
             Movie movie = mList.get(position);
@@ -169,7 +159,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                         null,
                         null);
                 isFavorite = false;
-                favoriteIv.setImageResource(R.drawable.ic_star_border_white_24px);
+                binding.favoriteIv.setImageResource(R.drawable.ic_star_border_white_24px);
                 snackBarText = mContext.getString(R.string.remove_favorite);
 
                 if (PopMovPreferences.getSorting(mContext) == MainActivity.FAVORITES) {
@@ -194,7 +184,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                         MovieContract.MovieEntry.CONTENT_URI,
                         contentValues);
                 isFavorite = true;
-                favoriteIv.setImageResource(R.drawable.ic_star_white_24px);
+                binding.favoriteIv.setImageResource(R.drawable.ic_star_white_24px);
                 snackBarText = mContext.getString(R.string.add_favorite);
             }
             Snackbar.make(view, snackBarText, Snackbar.LENGTH_SHORT).show();

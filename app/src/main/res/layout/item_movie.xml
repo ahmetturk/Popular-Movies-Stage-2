@@ -1,43 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    <data>
 
-    <ImageView
-        android:id="@+id/movie_item_iv"
+        <variable
+            name="movie"
+            type="com.ahmetroid.popularmovies.model.Movie" />
+
+        <variable
+            name="presenter"
+            type="com.ahmetroid.popularmovies.adapter.MovieAdapter.MovieAdapterViewHolder" />
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/movieItemParent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:adjustViewBounds="true"
-        android:contentDescription="@string/cd_movie_item"
-        android:scaleType="centerCrop" />
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> presenter.openMovieDetail(movie)}">
 
-    <TextView
-        android:id="@+id/movie_title_tv"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/grid_info_height"
-        android:layout_alignParentBottom="true"
-        android:background="#88000000"
-        android:ellipsize="end"
-        android:gravity="center_vertical"
-        android:maxLines="2"
-        android:paddingEnd="@dimen/grid_right_padding"
-        android:paddingLeft="@dimen/grid_left_padding"
-        android:paddingRight="@dimen/grid_right_padding"
-        android:paddingStart="@dimen/grid_left_padding"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/grid_info_text_size" />
+        <ImageView
+            android:id="@+id/movieItemIv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/cd_movie_item"
+            android:scaleType="centerCrop" />
 
-    <ImageView
-        android:id="@+id/favorite_iv"
-        android:layout_width="@dimen/grid_info_height"
-        android:layout_height="@dimen/grid_info_height"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:contentDescription="@string/cd_favorite"
-        android:padding="@dimen/image_padding"
-        app:srcCompat="@drawable/ic_star_border_white_24px" />
+        <TextView
+            android:id="@+id/movieTitleTv"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/grid_info_height"
+            android:layout_alignParentBottom="true"
+            android:background="#88000000"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="2"
+            android:paddingEnd="@dimen/grid_right_padding"
+            android:paddingLeft="@dimen/grid_left_padding"
+            android:paddingRight="@dimen/grid_right_padding"
+            android:paddingStart="@dimen/grid_left_padding"
+            android:text="@{movie.movieTitle}"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/grid_info_text_size" />
 
-</RelativeLayout>
+        <ImageView
+            android:id="@+id/favoriteIv"
+            android:layout_width="@dimen/grid_info_height"
+            android:layout_height="@dimen/grid_info_height"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:contentDescription="@string/cd_favorite"
+            android:onClick="@{(view) -> presenter.onClickFavorite(view)}"
+            android:padding="@dimen/image_padding"
+            app:srcCompat="@drawable/ic_star_border_white_24px" />
+
+    </RelativeLayout>
+</layout>
+

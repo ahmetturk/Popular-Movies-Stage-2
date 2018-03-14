@@ -1,51 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <ImageView
-        android:id="@+id/status_iv"
-        android:layout_width="112dp"
-        android:layout_height="112dp"
-        android:background="@drawable/circle"
-        android:contentDescription="@string/cd_status"
-        android:padding="24dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/status_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/margin_small"
-        android:layout_marginStart="@dimen/margin_small"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:textColor="@color/detailTextColor"
-        android:textSize="14sp"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/status_iv"
-        tools:text="@string/no_favorite" />
-
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/movies_list"
+        <ImageView
+            android:id="@+id/statusImage"
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:background="@drawable/circle"
+            android:contentDescription="@string/cd_status"
+            android:padding="24dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_small"
+            android:layout_marginStart="@dimen/margin_small"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:textColor="@color/detailTextColor"
+            android:textSize="14sp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/statusImage"
+            tools:text="@string/no_favorite" />
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/movies_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-</android.support.constraint.ConstraintLayout>
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

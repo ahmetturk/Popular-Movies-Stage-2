@@ -3,31 +3,26 @@ package com.ahmetroid.popularmovies.activity;
 import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ahmetroid.popularmovies.R;
 import com.ahmetroid.popularmovies.adapter.ReviewAdapter;
 import com.ahmetroid.popularmovies.adapter.VideoAdapter;
 import com.ahmetroid.popularmovies.data.MovieContract;
+import com.ahmetroid.popularmovies.databinding.ActivityDetailBinding;
 import com.ahmetroid.popularmovies.model.ApiResponse;
 import com.ahmetroid.popularmovies.model.Movie;
 import com.ahmetroid.popularmovies.model.Review;
@@ -40,8 +35,6 @@ import com.squareup.picasso.Target;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -53,29 +46,7 @@ public class DetailActivity extends AppCompatActivity {
     private static final String BUNDLE_VIDEOS = "videos";
     private static final String BUNDLE_REVIEWS = "reviews";
 
-    @BindView(R.id.movieTitleTv)
-    TextView movieTitleTv;
-    @BindView(R.id.releaseDateTv)
-    TextView releaseDateTv;
-    @BindView(R.id.userRatingTv)
-    TextView userRatingTv;
-    @BindView(R.id.plotSynopsisTv)
-    TextView plotSynopsisTv;
-    @BindView(R.id.backdrop)
-    ImageView backdropIv;
-    @BindView(R.id.poster)
-    ImageView posterIv;
-    @BindView(R.id.videos_list)
-    RecyclerView videosRecyclerView;
-    @BindView(R.id.reviews_list)
-    RecyclerView reviewsRecyclerView;
-    @BindView(R.id.favorite_button)
-    FloatingActionButton favoriteButton;
-    @BindView(R.id.collapsing_toolbar)
-    CollapsingToolbarLayout collapsingToolbar;
-    @BindView(R.id.coordinator_layout)
-    CoordinatorLayout coordinatorLayout;
-
+    private ActivityDetailBinding mBinding;
     private boolean isFavorite;
     private VideoAdapter mVideoAdapter;
     private ReviewAdapter mReviewAdapter;
@@ -86,16 +57,15 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
-        ButterKnife.bind(this);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
 
         mApiClient = ServiceGenerator.createService(ApiClient.class);
 
         movie = getIntent().getParcelableExtra(DETAIL_INTENT_KEY);
+        mBinding.setMovie(movie);
+        mBinding.setPresenter(this);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(movie.getMovieTitle());
-        setSupportActionBar(toolbar);
+        setSupportActionBar(mBinding.toolbar);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -117,21 +87,17 @@ public class DetailActivity extends AppCompatActivity {
      * populates UI of Detail Activity except Videos and Reviews
      */
     private void populateUI() {
-        movieTitleTv.setText(movie.getMovieTitle());
-        releaseDateTv.setText(movie.getReleaseDate());
-        userRatingTv.setText(getString(R.string.user_rating_text, movie.getUserRating()));
-        plotSynopsisTv.setText(movie.getPlotSynopsis());
 
         targetBackdrop = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                backdropIv.setImageBitmap(bitmap);
+                mBinding.backdrop.setImageBitmap(bitmap);
                 Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
                     @Override
                     public void onGenerated(@NonNull Palette palette) {
                         int color = palette.getMutedColor(R.attr.colorPrimary) | 0xFF000000;
-                        collapsingToolbar.setContentScrimColor(color);
-                        collapsingToolbar.setStatusBarScrimColor(color);
+                        mBinding.collapsingToolbar.setContentScrimColor(color);
+                        mBinding.collapsingToolbar.setStatusBarScrimColor(color);
                     }
                 });
             }
@@ -152,7 +118,7 @@ public class DetailActivity extends AppCompatActivity {
                 .load("http://image.tmdb.org/t/p/w342" + movie.getPosterPath())
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.error)
-                .into(posterIv);
+                .into(mBinding.movieDetails.poster);
 
         Cursor cursor = getContentResolver().query(
                 MovieContract.MovieEntry.buildMovieUriWithId(movie.getMovieId()),
@@ -161,10 +127,13 @@ public class DetailActivity extends AppCompatActivity {
                 null,
                 null);
 
-        isFavorite = false;
+
         if (cursor != null && cursor.moveToNext()) {
             isFavorite = true;
-            favoriteButton.setImageResource(R.drawable.ic_star_white_24px);
+            mBinding.favoriteButton.setImageResource(R.drawable.ic_star_white_24px);
+        } else {
+            isFavorite = false;
+            mBinding.favoriteButton.setImageResource(R.drawable.ic_star_border_white_24px);
         }
 
         if (cursor != null) {
@@ -178,15 +147,15 @@ public class DetailActivity extends AppCompatActivity {
     private void populateVideos(Bundle savedInstanceState) {
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        videosRecyclerView.setLayoutManager(layoutManager);
-        videosRecyclerView.setHasFixedSize(true);
-        videosRecyclerView.setNestedScrollingEnabled(false);
+        mBinding.movieVideos.videosList.setLayoutManager(layoutManager);
+        mBinding.movieVideos.videosList.setHasFixedSize(true);
+        mBinding.movieVideos.videosList.setNestedScrollingEnabled(false);
 
         RecyclerView.ItemDecoration itemDecoration = new HorizontalItemDecoration(this);
-        videosRecyclerView.addItemDecoration(itemDecoration);
+        mBinding.movieVideos.videosList.addItemDecoration(itemDecoration);
 
         mVideoAdapter = new VideoAdapter(this);
-        videosRecyclerView.setAdapter(mVideoAdapter);
+        mBinding.movieVideos.videosList.setAdapter(mVideoAdapter);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_VIDEOS)) {
             mVideoAdapter.addVideosList(savedInstanceState.
@@ -224,15 +193,15 @@ public class DetailActivity extends AppCompatActivity {
     private void populateReviews(Bundle savedInstanceState) {
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        reviewsRecyclerView.setLayoutManager(layoutManager);
-        reviewsRecyclerView.setHasFixedSize(true);
-        reviewsRecyclerView.setNestedScrollingEnabled(false);
+        mBinding.movieReviews.reviewsList.setLayoutManager(layoutManager);
+        mBinding.movieReviews.reviewsList.setHasFixedSize(true);
+        mBinding.movieReviews.reviewsList.setNestedScrollingEnabled(false);
 
         RecyclerView.ItemDecoration itemDecoration = new HorizontalItemDecoration(this);
-        reviewsRecyclerView.addItemDecoration(itemDecoration);
+        mBinding.movieReviews.reviewsList.addItemDecoration(itemDecoration);
 
         mReviewAdapter = new ReviewAdapter(this);
-        reviewsRecyclerView.setAdapter(mReviewAdapter);
+        mBinding.movieReviews.reviewsList.setAdapter(mReviewAdapter);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_REVIEWS)) {
             mReviewAdapter.addReviewsList(savedInstanceState.<Review>getParcelableArrayList(BUNDLE_REVIEWS));
@@ -267,7 +236,7 @@ public class DetailActivity extends AppCompatActivity {
      * adds the movie to favorite or remove it if it already exists
      * adding favorite means adds it to sql database
      */
-    public void onClickFavoriteButton(View view) {
+    public void onClickFavoriteButton() {
         String snackBarText;
         if (isFavorite) {
             getContentResolver().delete(
@@ -275,7 +244,7 @@ public class DetailActivity extends AppCompatActivity {
                     null,
                     null);
             isFavorite = false;
-            favoriteButton.setImageResource(R.drawable.ic_star_border_white_24px);
+            mBinding.favoriteButton.setImageResource(R.drawable.ic_star_border_white_24px);
             snackBarText = getString(R.string.remove_favorite);
         } else {
             ContentValues contentValues = new ContentValues();
@@ -291,10 +260,10 @@ public class DetailActivity extends AppCompatActivity {
                     MovieContract.MovieEntry.CONTENT_URI,
                     contentValues);
             isFavorite = true;
-            favoriteButton.setImageResource(R.drawable.ic_star_white_24px);
+            mBinding.favoriteButton.setImageResource(R.drawable.ic_star_white_24px);
             snackBarText = getString(R.string.add_favorite);
         }
-        Snackbar.make(coordinatorLayout, snackBarText, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mBinding.coordinatorLayout, snackBarText, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

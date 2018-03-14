@@ -3,6 +3,7 @@ package com.ahmetroid.popularmovies.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.databinding.DataBindingUtil;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -15,22 +16,21 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ahmetroid.popularmovies.BuildConfig;
 import com.ahmetroid.popularmovies.R;
 import com.ahmetroid.popularmovies.adapter.MovieAdapter;
 import com.ahmetroid.popularmovies.data.MovieContract;
 import com.ahmetroid.popularmovies.data.PopMovPreferences;
+import com.ahmetroid.popularmovies.databinding.ActivityMainBinding;
 import com.ahmetroid.popularmovies.model.ApiResponse;
 import com.ahmetroid.popularmovies.model.Movie;
 import com.ahmetroid.popularmovies.rest.ApiClient;
@@ -42,8 +42,6 @@ import com.facebook.stetho.Stetho;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -78,15 +76,7 @@ public class MainActivity extends AppCompatActivity
     private static final String BUNDLE_PREF = "pref";
     private static final String BUNDLE_RECYCLER = "recycler";
 
-    @BindView(R.id.swipeRefreshLayout)
-    SwipeRefreshLayout mSwipeRefreshLayout;
-    @BindView(R.id.status_tv)
-    TextView statusTv;
-    @BindView(R.id.status_iv)
-    ImageView statusIv;
-    @BindView(R.id.movies_list)
-    RecyclerView recyclerView;
-
+    private ActivityMainBinding mBinding;
     private MovieAdapter mMoviesAdapter;
     private RecyclerViewScrollListener mScrollListener;
     private Bundle mSavedInstanceState;
@@ -96,9 +86,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Stetho.initializeWithDefaults(this);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        if (BuildConfig.DEBUG) {
+            Stetho.initializeWithDefaults(this);
+        }
+
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Movies");
@@ -106,12 +98,12 @@ public class MainActivity extends AppCompatActivity
         mApiClient = ServiceGenerator.createService(ApiClient.class);
 
         mGridLayoutManager = new GridLayoutManager(this, numberOfColumns());
-        recyclerView.setLayoutManager(mGridLayoutManager);
+        mBinding.moviesList.setLayoutManager(mGridLayoutManager);
 
-        recyclerView.addItemDecoration(new GridItemDecoration(this));
+        mBinding.moviesList.addItemDecoration(new GridItemDecoration(this));
 
         mMoviesAdapter = new MovieAdapter(this, this);
-        recyclerView.setAdapter(mMoviesAdapter);
+        mBinding.moviesList.setAdapter(mMoviesAdapter);
 
         mScrollListener = new RecyclerViewScrollListener(mGridLayoutManager) {
             @Override
@@ -121,7 +113,7 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mBinding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 mSavedInstanceState = null;
@@ -173,8 +165,8 @@ public class MainActivity extends AppCompatActivity
         mMoviesAdapter.clearMoviesList();
         if (sorting == FAVORITES) {
             // FAVORITES SELECTED
-            recyclerView.clearOnScrollListeners();
-            mSwipeRefreshLayout.setEnabled(false);
+            mBinding.moviesList.clearOnScrollListeners();
+            mBinding.swipeRefreshLayout.setEnabled(false);
             getSupportLoaderManager().initLoader(ID_FAVORITES_LOADER, null, this);
         } else {
             if (mSavedInstanceState != null && mSavedInstanceState.getInt(BUNDLE_PREF) == sorting) {
@@ -195,7 +187,7 @@ public class MainActivity extends AppCompatActivity
                 mScrollListener.resetState();
                 fetchNewMovies(1, sorting);
             }
-            recyclerView.addOnScrollListener(mScrollListener);
+            mBinding.moviesList.addOnScrollListener(mScrollListener);
         }
     }
 
@@ -233,14 +225,14 @@ public class MainActivity extends AppCompatActivity
                     List<Movie> result = response.body().getResults();
                     if (result != null) {
                         hideStatus();
-                        mSwipeRefreshLayout.setEnabled(false);
+                        mBinding.swipeRefreshLayout.setEnabled(false);
                         mMoviesAdapter.addMoviesList(result);
                     }
                 } catch (NullPointerException e) {
                     Toast.makeText(MainActivity.this,
                             getString(R.string.connection_error), Toast.LENGTH_LONG).show();
                 } finally {
-                    mSwipeRefreshLayout.setRefreshing(false);
+                    mBinding.swipeRefreshLayout.setRefreshing(false);
                 }
             }
 
@@ -329,29 +321,29 @@ public class MainActivity extends AppCompatActivity
      * shows no internet text view and enables swipe refresh
      */
     private void showNoInternetStatus() {
-        statusIv.setImageResource(R.drawable.ic_signal_wifi_off_white_24px);
-        statusIv.setVisibility(View.VISIBLE);
-        statusTv.setText(R.string.no_internet);
-        statusTv.setVisibility(View.VISIBLE);
-        mSwipeRefreshLayout.setEnabled(true);
+        mBinding.statusImage.setImageResource(R.drawable.ic_signal_wifi_off_white_24px);
+        mBinding.statusImage.setVisibility(View.VISIBLE);
+        mBinding.statusText.setText(R.string.no_internet);
+        mBinding.statusText.setVisibility(View.VISIBLE);
+        mBinding.swipeRefreshLayout.setEnabled(true);
     }
 
     /**
      * shows no favorite text view
      */
     private void showNoFavoriteStatus() {
-        statusIv.setImageResource(R.drawable.ic_star_border_white_24px);
-        statusIv.setVisibility(View.VISIBLE);
-        statusTv.setText(R.string.no_favorite);
-        statusTv.setVisibility(View.VISIBLE);
+        mBinding.statusImage.setImageResource(R.drawable.ic_star_border_white_24px);
+        mBinding.statusImage.setVisibility(View.VISIBLE);
+        mBinding.statusText.setText(R.string.no_favorite);
+        mBinding.statusText.setVisibility(View.VISIBLE);
     }
 
     /**
      * hides status text view
      */
     private void hideStatus() {
-        statusIv.setVisibility(View.INVISIBLE);
-        statusTv.setVisibility(View.INVISIBLE);
+        mBinding.statusImage.setVisibility(View.INVISIBLE);
+        mBinding.statusText.setVisibility(View.INVISIBLE);
     }
 
     @NonNull

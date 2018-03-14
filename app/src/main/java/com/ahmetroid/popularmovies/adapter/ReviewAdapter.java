@@ -4,20 +4,14 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.ahmetroid.popularmovies.R;
+import com.ahmetroid.popularmovies.databinding.ItemReviewBinding;
 import com.ahmetroid.popularmovies.model.Review;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -35,17 +29,15 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewAdap
     @NonNull
     @Override
     public ReviewAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext)
-                .inflate(R.layout.item_review, parent, false);
-        return new ReviewAdapterViewHolder(view);
+        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+        ItemReviewBinding binding = ItemReviewBinding.inflate(layoutInflater, parent, false);
+        return new ReviewAdapterViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ReviewAdapterViewHolder holder, int position) {
         Review review = mList.get(position);
-
-        holder.authorTv.setText(review.getAuthor());
-        holder.contentTv.setText(review.getContent());
+        holder.bind(review);
     }
 
     @Override
@@ -65,27 +57,24 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewAdap
         return (ArrayList<Review>) mList;
     }
 
-    class ReviewAdapterViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.author_tv)
-        TextView authorTv;
-        @BindView(R.id.content_tv)
-        TextView contentTv;
-        @BindView(R.id.view_more_tv)
-        TextView viewMoreTv;
-        @BindView(R.id.less_iv)
-        ImageView lessIv;
-        @BindView(R.id.expand_iv)
-        ImageView expandIv;
-        boolean expanded = false;
+    public class ReviewAdapterViewHolder extends RecyclerView.ViewHolder {
 
-        ReviewAdapterViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
+        ItemReviewBinding binding;
+        boolean expanded;
+
+        public ReviewAdapterViewHolder(ItemReviewBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+            this.expanded = false;
         }
 
-        @OnClick({R.id.view_more_tv, R.id.expand_iv, R.id.less_iv})
-        public void expandCard() {
-            int lineCount = contentTv.getLineCount();
+        public void bind(Review review) {
+            binding.setReview(review);
+            binding.setPresenter(this);
+        }
+
+        public void onClickExpand() {
+            int lineCount = binding.contentTv.getLineCount();
 
             if (lineCount < 10) {
                 return;
@@ -93,18 +82,17 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewAdap
 
             if (expanded) {
                 expanded = false;
-                contentTv.setMaxLines(10);
-                lessIv.setVisibility(GONE);
-                expandIv.setImageResource(R.drawable.ic_expand_more_black_24px);
-                viewMoreTv.setText(R.string.view_more);
+                binding.contentTv.setMaxLines(10);
+                binding.lessIv.setVisibility(GONE);
+                binding.expandIv.setImageResource(R.drawable.ic_expand_more_black_24px);
+                binding.viewMoreTv.setText(R.string.view_more);
             } else {
                 expanded = true;
-                contentTv.setMaxLines(Integer.MAX_VALUE);
-                lessIv.setVisibility(VISIBLE);
-                expandIv.setImageResource(R.drawable.ic_expand_less_black_24px);
-                viewMoreTv.setText(R.string.view_less);
+                binding.contentTv.setMaxLines(Integer.MAX_VALUE);
+                binding.lessIv.setVisibility(VISIBLE);
+                binding.expandIv.setImageResource(R.drawable.ic_expand_less_black_24px);
+                binding.viewMoreTv.setText(R.string.view_less);
             }
         }
-
     }
 }

@@ -1,96 +1,117 @@
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/review_card_view"
-    android:layout_width="@dimen/review_item_width"
-    android:layout_height="wrap_content"
-    app:cardElevation="2dp">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <data>
 
-        <TextView
-            android:id="@+id/author_tv"
+        <variable
+            name="review"
+            type="com.ahmetroid.popularmovies.model.Review" />
+
+        <variable
+            name="presenter"
+            type="com.ahmetroid.popularmovies.adapter.ReviewAdapter.ReviewAdapterViewHolder" />
+    </data>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/reviewCardView"
+        android:layout_width="@dimen/review_item_width"
+        android:layout_height="wrap_content"
+        app:cardElevation="2dp">
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/review_author_height"
-            android:layout_alignParentTop="true"
-            android:layout_marginEnd="48dp"
-            android:layout_marginLeft="@dimen/margin_medium"
-            android:layout_marginRight="48dp"
-            android:layout_marginStart="@dimen/margin_medium"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:ellipsize="none"
-            android:singleLine="true"
-            android:textColor="@color/detailTextColor"
-            android:textSize="@dimen/review_author_text_size"
-            tools:text="Ahmet Turk Ahmet Turk Ahmet" />
-        <ImageView
-            android:id="@+id/less_iv"
-            android:layout_width="@dimen/image_size"
-            android:layout_height="@dimen/image_size"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="@dimen/margin_small"
-            android:contentDescription="@string/cd_less"
-            android:padding="@dimen/image_padding"
-            android:visibility="gone"
-            app:srcCompat="@drawable/ic_expand_less_black_24px" />
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/content_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/author_tv"
-            android:layout_marginEnd="@dimen/margin_medium"
-            android:layout_marginLeft="@dimen/margin_medium"
-            android:layout_marginRight="@dimen/margin_medium"
-            android:layout_marginStart="@dimen/margin_medium"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:ellipsize="end"
-            android:maxLines="10"
-            android:minHeight="@dimen/review_content_height"
-            android:textColor="@color/detailTextColor"
-            android:textSize="@dimen/review_content_text_size"
-            tools:text="There is movie review" />
+            <TextView
+                android:id="@+id/authorTv"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/review_author_height"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="48dp"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginRight="48dp"
+                android:layout_marginStart="@dimen/margin_medium"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:ellipsize="none"
+                android:singleLine="true"
+                android:text="@{review.author}"
+                android:textColor="@color/detailTextColor"
+                android:textSize="@dimen/review_author_text_size"
+                tools:text="Ahmet Turk" />
 
-        <View
-            android:id="@+id/divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@id/content_tv"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:background="@color/dividerColor" />
+            <ImageView
+                android:id="@+id/lessIv"
+                android:layout_width="@dimen/image_size"
+                android:layout_height="@dimen/image_size"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="@dimen/margin_small"
+                android:contentDescription="@string/cd_less"
+                android:onClick="@{() -> presenter.onClickExpand()}"
+                android:padding="@dimen/image_padding"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_expand_less_black_24px" />
 
-        <TextView
-            android:id="@+id/view_more_tv"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/review_view_more_height"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@id/divider"
-            android:layout_marginLeft="@dimen/margin_medium"
-            android:layout_marginStart="@dimen/margin_medium"
-            android:layout_toLeftOf="@id/expand_iv"
-            android:layout_toStartOf="@id/expand_iv"
-            android:gravity="center_vertical"
-            android:text="@string/view_more"
-            android:textAppearance="@style/TextAppearance.AppCompat.Button"
-            android:textColor="@color/viewMoreColor" />
+            <TextView
+                android:id="@+id/contentTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/authorTv"
+                android:layout_marginEnd="@dimen/margin_medium"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginRight="@dimen/margin_medium"
+                android:layout_marginStart="@dimen/margin_medium"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:ellipsize="end"
+                android:maxLines="10"
+                android:minHeight="@dimen/review_content_height"
+                android:text="@{review.content}"
+                android:textColor="@color/detailTextColor"
+                android:textSize="@dimen/review_content_text_size"
+                tools:text="There is movie review" />
 
-        <ImageView
-            android:id="@+id/expand_iv"
-            android:layout_width="@dimen/image_size"
-            android:layout_height="@dimen/image_size"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/divider"
-            android:contentDescription="@string/cd_more"
-            android:padding="@dimen/image_padding"
-            app:srcCompat="@drawable/ic_expand_more_black_24px" />
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/contentTv"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:background="@color/dividerColor" />
 
-    </RelativeLayout>
-</android.support.v7.widget.CardView>
+            <TextView
+                android:id="@+id/viewMoreTv"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/review_view_more_height"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/divider"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginStart="@dimen/margin_medium"
+                android:layout_toLeftOf="@id/expandIv"
+                android:layout_toStartOf="@id/expandIv"
+                android:gravity="center_vertical"
+                android:onClick="@{() -> presenter.onClickExpand()}"
+                android:text="@string/view_more"
+                android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                android:textColor="@color/viewMoreColor" />
+
+            <ImageView
+                android:id="@+id/expandIv"
+                android:layout_width="@dimen/image_size"
+                android:layout_height="@dimen/image_size"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/divider"
+                android:contentDescription="@string/cd_more"
+                android:onClick="@{() -> presenter.onClickExpand()}"
+                android:padding="@dimen/image_padding"
+                app:srcCompat="@drawable/ic_expand_more_black_24px" />
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</layout>
+
 
 
