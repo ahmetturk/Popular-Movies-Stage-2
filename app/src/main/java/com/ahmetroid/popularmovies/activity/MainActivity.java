@@ -2,16 +2,13 @@ package com.ahmetroid.popularmovies.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -25,10 +22,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.ahmetroid.popularmovies.BuildConfig;
 import com.ahmetroid.popularmovies.R;
 import com.ahmetroid.popularmovies.adapter.MovieAdapter;
-import com.ahmetroid.popularmovies.data.MovieContract;
+import com.ahmetroid.popularmovies.data.AppDatabase;
+import com.ahmetroid.popularmovies.data.PopMovDatabase;
 import com.ahmetroid.popularmovies.data.PopMovPreferences;
 import com.ahmetroid.popularmovies.databinding.ActivityMainBinding;
 import com.ahmetroid.popularmovies.model.ApiResponse;
@@ -36,36 +33,24 @@ import com.ahmetroid.popularmovies.model.Movie;
 import com.ahmetroid.popularmovies.rest.ApiClient;
 import com.ahmetroid.popularmovies.rest.ServiceGenerator;
 import com.ahmetroid.popularmovies.utils.GridItemDecoration;
+import com.ahmetroid.popularmovies.utils.MyExecutor;
 import com.ahmetroid.popularmovies.utils.RecyclerViewScrollListener;
-import com.facebook.stetho.Stetho;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<Cursor>, MovieAdapter.ListenerMovieAdapter {
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
+
+public class MainActivity extends AppCompatActivity implements MovieAdapter.ListenerMovieAdapter {
 
     // popular = 0, highest rated = 1, favorites = 2
     public static final int FAVORITES = 2;
-    private static final int INDEX_MOVIE_ID = 0;
-    private static final int INDEX_MOVIE_TITLE = 1;
-    private static final int INDEX_POSTER_PATH = 2;
-    private static final int INDEX_PLOT_SYNOPSIS = 3;
-    private static final int INDEX_USER_RATING = 4;
-    private static final int INDEX_RELEASE_DATE = 5;
-    private static final int INDEX_BACKDROP_PATH = 6;
-    private static final String[] MOVIE_PROJECTION = {
-            MovieContract.MovieEntry.COLUMN_MOVIE_ID,
-            MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
-            MovieContract.MovieEntry.COLUMN_POSTER_PATH,
-            MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS,
-            MovieContract.MovieEntry.COLUMN_USER_RATING,
-            MovieContract.MovieEntry.COLUMN_RELEASE_DATE,
-            MovieContract.MovieEntry.COLUMN_BACKDROP_PATH};
+
     // Cursor Loader ID
     private static final int ID_FAVORITES_LOADER = 1;
 
@@ -77,32 +62,38 @@ public class MainActivity extends AppCompatActivity
     private static final String BUNDLE_RECYCLER = "recycler";
 
     private ActivityMainBinding mBinding;
+    private AppDatabase mDatabase;
     private MovieAdapter mMoviesAdapter;
     private RecyclerViewScrollListener mScrollListener;
     private Bundle mSavedInstanceState;
     private GridLayoutManager mGridLayoutManager;
     private ApiClient mApiClient;
+    private Executor executor;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (BuildConfig.DEBUG) {
-            Stetho.initializeWithDefaults(this);
-        }
+        //if (BuildConfig.DEBUG) {
+        //    Stetho.initializeWithDefaults(this);
+        //}
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        mBinding.setPresenter(this);
+        mDatabase = PopMovDatabase.getInstance(this);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Movies");
 
         mApiClient = ServiceGenerator.createService(ApiClient.class);
 
+        executor = new MyExecutor();
+
         mGridLayoutManager = new GridLayoutManager(this, numberOfColumns());
         mBinding.moviesList.setLayoutManager(mGridLayoutManager);
 
         mBinding.moviesList.addItemDecoration(new GridItemDecoration(this));
 
-        mMoviesAdapter = new MovieAdapter(this, this);
+        mMoviesAdapter = new MovieAdapter(this, this, mDatabase);
         mBinding.moviesList.setAdapter(mMoviesAdapter);
 
         mScrollListener = new RecyclerViewScrollListener(mGridLayoutManager) {
@@ -167,7 +158,27 @@ public class MainActivity extends AppCompatActivity
             // FAVORITES SELECTED
             mBinding.moviesList.clearOnScrollListeners();
             mBinding.swipeRefreshLayout.setEnabled(false);
-            getSupportLoaderManager().initLoader(ID_FAVORITES_LOADER, null, this);
+
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    final List<Movie> movies = mDatabase.movieDao().getAll();
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mMoviesAdapter.addMoviesList(movies);
+                            if (mMoviesAdapter.getItemCount() == 0) {
+                                showNoFavoriteStatus();
+                            } else {
+                                hideStatus();
+                            }
+                        }
+                    });
+                }
+
+            });
+
         } else {
             if (mSavedInstanceState != null && mSavedInstanceState.getInt(BUNDLE_PREF) == sorting) {
                 // NOT FAVORITES SELECTED BUT THERE IS SAVED DATA
@@ -292,13 +303,26 @@ public class MainActivity extends AppCompatActivity
      * @return the number of columns in the grid layout of main activity
      */
     private int numberOfColumns() {
+
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int widthDivider = 400;
         int width = displayMetrics.widthPixels;
-        int nColumns = width / widthDivider;
-        if (nColumns < 2) return 2;
-        return nColumns;
+
+        if (getResources().getConfiguration().orientation == ORIENTATION_PORTRAIT) {
+            if (width > 1000) {
+                return 3;
+            } else {
+                return 2;
+            }
+        } else {
+            if (width > 1700) {
+                return 5;
+            } else if (width > 1200) {
+                return 4;
+            } else {
+                return 3;
+            }
+        }
     }
 
     /**
@@ -346,59 +370,12 @@ public class MainActivity extends AppCompatActivity
         mBinding.statusText.setVisibility(View.INVISIBLE);
     }
 
-    @NonNull
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
-        switch (id) {
-            case ID_FAVORITES_LOADER:
-                return new CursorLoader(this,
-                        MovieContract.MovieEntry.CONTENT_URI,
-                        MOVIE_PROJECTION,
-                        null,
-                        null,
-                        null);
-
-            default:
-                throw new RuntimeException("Loader Not Implemented: " + id);
-        }
-    }
-
-    @Override
-    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                mMoviesAdapter.addMovie(new Movie(
-                        cursor.getString(INDEX_MOVIE_ID),
-                        cursor.getString(INDEX_MOVIE_TITLE),
-                        cursor.getString(INDEX_POSTER_PATH),
-                        cursor.getString(INDEX_PLOT_SYNOPSIS),
-                        cursor.getString(INDEX_USER_RATING),
-                        cursor.getString(INDEX_RELEASE_DATE),
-                        cursor.getString(INDEX_BACKDROP_PATH)));
-            }
-        }
-
-        if (mMoviesAdapter.getItemCount() == 0 && mSavedInstanceState != null
-                && mSavedInstanceState.getInt(BUNDLE_PREF) == FAVORITES) {
-            ArrayList<Movie> list = mSavedInstanceState.getParcelableArrayList(BUNDLE_MOVIES);
-            mMoviesAdapter.addMoviesList(list);
-            mGridLayoutManager
-                    .onRestoreInstanceState(mSavedInstanceState.getParcelable(BUNDLE_RECYCLER));
-        }
-
-        if (mMoviesAdapter.getItemCount() == 0) {
-            showNoFavoriteStatus();
-        } else {
-            hideStatus();
-        }
-    }
-
-    @Override
-    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-    }
-
     @Override
     public void onEmpty() {
         showNoFavoriteStatus();
+    }
+
+    public void notThisStar() {
+        Snackbar.make(mBinding.mainLayout, getString(R.string.not_this_star), Snackbar.LENGTH_LONG).show();
     }
 }

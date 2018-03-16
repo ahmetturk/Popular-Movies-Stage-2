@@ -1,8 +1,6 @@
 package com.ahmetroid.popularmovies.activity;
 
 import android.content.ActivityNotFoundException;
-import android.content.ContentValues;
-import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -21,24 +19,27 @@ import android.widget.Toast;
 import com.ahmetroid.popularmovies.R;
 import com.ahmetroid.popularmovies.adapter.ReviewAdapter;
 import com.ahmetroid.popularmovies.adapter.VideoAdapter;
-import com.ahmetroid.popularmovies.data.MovieContract;
+import com.ahmetroid.popularmovies.data.AppDatabase;
+import com.ahmetroid.popularmovies.data.PopMovDatabase;
 import com.ahmetroid.popularmovies.databinding.ActivityDetailBinding;
 import com.ahmetroid.popularmovies.model.ApiResponse;
+import com.ahmetroid.popularmovies.model.MiniMovie;
 import com.ahmetroid.popularmovies.model.Movie;
 import com.ahmetroid.popularmovies.model.Review;
 import com.ahmetroid.popularmovies.model.Video;
 import com.ahmetroid.popularmovies.rest.ApiClient;
 import com.ahmetroid.popularmovies.rest.ServiceGenerator;
 import com.ahmetroid.popularmovies.utils.HorizontalItemDecoration;
+import com.ahmetroid.popularmovies.utils.MyExecutor;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 
 public class DetailActivity extends AppCompatActivity {
     public static final String DETAIL_INTENT_KEY = "com.example.ahmet.popularmovies.detail";
@@ -47,19 +48,24 @@ public class DetailActivity extends AppCompatActivity {
     private static final String BUNDLE_REVIEWS = "reviews";
 
     private ActivityDetailBinding mBinding;
+    private AppDatabase mDatabase;
     private boolean isFavorite;
     private VideoAdapter mVideoAdapter;
     private ReviewAdapter mReviewAdapter;
     private Target targetBackdrop;
     private Movie movie;
     private ApiClient mApiClient;
+    private Executor executor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
+        mDatabase = PopMovDatabase.getInstance(this);
 
         mApiClient = ServiceGenerator.createService(ApiClient.class);
+
+        executor = new MyExecutor();
 
         movie = getIntent().getParcelableExtra(DETAIL_INTENT_KEY);
         mBinding.setMovie(movie);
@@ -103,42 +109,39 @@ public class DetailActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
+            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
             }
 
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {
             }
         };
-        Picasso.with(this)
+
+        Picasso.get()
                 .load("http://image.tmdb.org/t/p/w780" + movie.getBackdropPath())
                 .into(targetBackdrop);
 
-        Picasso.with(this)
+        Picasso.get()
                 .load("http://image.tmdb.org/t/p/w342" + movie.getPosterPath())
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.error)
                 .into(mBinding.movieDetails.poster);
 
-        Cursor cursor = getContentResolver().query(
-                MovieContract.MovieEntry.buildMovieUriWithId(movie.getMovieId()),
-                new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},
-                null,
-                null,
-                null);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                MiniMovie miniMovie = mDatabase.movieDao().getMovieById(movie.getMovieId());
 
-
-        if (cursor != null && cursor.moveToNext()) {
-            isFavorite = true;
-            mBinding.favoriteButton.setImageResource(R.drawable.ic_star_white_24px);
-        } else {
-            isFavorite = false;
-            mBinding.favoriteButton.setImageResource(R.drawable.ic_star_border_white_24px);
-        }
-
-        if (cursor != null) {
-            cursor.close();
-        }
+                if (miniMovie != null) {
+                    isFavorite = true;
+                    mBinding.favoriteButton.setImageResource(R.drawable.ic_star_white_24px);
+                } else {
+                    isFavorite = false;
+                    mBinding.favoriteButton.setImageResource(R.drawable.ic_star_border_white_24px);
+                }
+            }
+        });
     }
 
     /**
@@ -239,26 +242,22 @@ public class DetailActivity extends AppCompatActivity {
     public void onClickFavoriteButton() {
         String snackBarText;
         if (isFavorite) {
-            getContentResolver().delete(
-                    MovieContract.MovieEntry.buildMovieUriWithId(movie.getMovieId()),
-                    null,
-                    null);
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mDatabase.movieDao().delete(movie);
+                }
+            });
             isFavorite = false;
             mBinding.favoriteButton.setImageResource(R.drawable.ic_star_border_white_24px);
             snackBarText = getString(R.string.remove_favorite);
         } else {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.getMovieId());
-            contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, movie.getMovieTitle());
-            contentValues.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
-            contentValues.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, movie.getPlotSynopsis());
-            contentValues.put(MovieContract.MovieEntry.COLUMN_USER_RATING, movie.getUserRating());
-            contentValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
-            contentValues.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH, movie.getBackdropPath());
-
-            getContentResolver().insert(
-                    MovieContract.MovieEntry.CONTENT_URI,
-                    contentValues);
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mDatabase.movieDao().insert(movie);
+                }
+            });
             isFavorite = true;
             mBinding.favoriteButton.setImageResource(R.drawable.ic_star_white_24px);
             snackBarText = getString(R.string.add_favorite);

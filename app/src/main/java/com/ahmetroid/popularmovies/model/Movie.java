@@ -1,10 +1,14 @@
 package com.ahmetroid.popularmovies.model;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
+@Entity
 public class Movie implements Parcelable {
     public static final Parcelable.Creator<Movie> CREATOR
             = new Parcelable.Creator<Movie>() {
@@ -17,6 +21,8 @@ public class Movie implements Parcelable {
         }
     };
 
+    @PrimaryKey
+    @NonNull
     @SerializedName("id")
     private String movieId;
     @SerializedName("title")
@@ -32,15 +38,7 @@ public class Movie implements Parcelable {
     @SerializedName("backdrop_path")
     private String backdropPath;
 
-    public Movie(String movieId, String movieTitle, String posterPath, String plotSynopsis,
-                 String userRating, String releaseDate, String backdropPath) {
-        this.movieId = movieId;
-        this.movieTitle = movieTitle;
-        this.posterPath = posterPath;
-        this.plotSynopsis = plotSynopsis;
-        this.userRating = userRating;
-        this.releaseDate = releaseDate;
-        this.backdropPath = backdropPath;
+    public Movie() {
     }
 
     private Movie(Parcel in) {
@@ -57,28 +55,56 @@ public class Movie implements Parcelable {
         return movieId;
     }
 
+    public void setMovieId(@NonNull String movieId) {
+        this.movieId = movieId;
+    }
+
     public String getMovieTitle() {
         return movieTitle;
+    }
+
+    public void setMovieTitle(String movieTitle) {
+        this.movieTitle = movieTitle;
     }
 
     public String getPosterPath() {
         return posterPath;
     }
 
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
+    }
+
     public String getPlotSynopsis() {
         return plotSynopsis;
+    }
+
+    public void setPlotSynopsis(String plotSynopsis) {
+        this.plotSynopsis = plotSynopsis;
     }
 
     public String getUserRating() {
         return userRating;
     }
 
+    public void setUserRating(String userRating) {
+        this.userRating = userRating;
+    }
+
     public String getReleaseDate() {
         return releaseDate;
     }
 
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
     public String getBackdropPath() {
         return backdropPath;
+    }
+
+    public void setBackdropPath(String backdropPath) {
+        this.backdropPath = backdropPath;
     }
 
     @Override

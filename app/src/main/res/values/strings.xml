@@ -35,6 +35,7 @@
 
     <string name="no_internet">No internet connection, swipe to refresh</string>
     <string name="no_favorite">To add a movie to favorites, tap star</string>
+    <string name="not_this_star">Not this star. Tap star on poster or detail page.</string>
     <string name="no_app">There is not any sharing app installed on device</string>
 
     <string name="view_more">VIEW MORE</string>

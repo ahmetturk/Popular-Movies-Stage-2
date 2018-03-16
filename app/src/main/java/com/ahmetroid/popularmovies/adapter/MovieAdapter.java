@@ -1,9 +1,9 @@
 package com.ahmetroid.popularmovies.adapter;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -14,24 +14,31 @@ import android.view.ViewGroup;
 import com.ahmetroid.popularmovies.R;
 import com.ahmetroid.popularmovies.activity.DetailActivity;
 import com.ahmetroid.popularmovies.activity.MainActivity;
-import com.ahmetroid.popularmovies.data.MovieContract;
+import com.ahmetroid.popularmovies.data.AppDatabase;
 import com.ahmetroid.popularmovies.data.PopMovPreferences;
 import com.ahmetroid.popularmovies.databinding.ItemMovieBinding;
+import com.ahmetroid.popularmovies.model.MiniMovie;
 import com.ahmetroid.popularmovies.model.Movie;
+import com.ahmetroid.popularmovies.utils.MyExecutor;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
-    private final Context mContext;
+    private Context mContext;
+    private AppDatabase mDatabase;
     private List<Movie> mList;
     private ListenerMovieAdapter mListener;
+    private Executor executor;
 
-    public MovieAdapter(Context context, ListenerMovieAdapter listener) {
+    public MovieAdapter(Context context, ListenerMovieAdapter listener, AppDatabase database) {
         this.mContext = context;
         this.mListener = listener;
+        this.mDatabase = database;
+        this.executor = new MyExecutor();
     }
 
     @Override
@@ -74,14 +81,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         }
     }
 
-    public void addMovie(Movie movie) {
-        if (movie != null) {
-            int positionStart = mList.size();
-            mList.add(movie);
-            notifyItemInserted(positionStart);
-        }
-    }
-
     public ArrayList<Movie> getList() {
         return (ArrayList<Movie>) mList;
     }
@@ -100,34 +99,36 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
             this.binding = binding;
         }
 
-        public void bind(Movie movie) {
+        public void bind(final Movie movie) {
             binding.setMovie(movie);
             binding.setPresenter(this);
 
-            Picasso.with(mContext)
+            Picasso.get()
                     .load("http://image.tmdb.org/t/p/w342" + movie.getPosterPath())
                     .placeholder(R.drawable.placeholder)
                     .error(R.drawable.error)
                     .into(binding.movieItemIv);
 
-            Cursor cursor = mContext.getContentResolver().query(
-                    MovieContract.MovieEntry.buildMovieUriWithId(movie.getMovieId()),
-                    new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},
-                    null,
-                    null,
-                    null);
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    final MiniMovie miniMovie = mDatabase.movieDao().getMovieById(movie.getMovieId());
 
-            if (cursor != null && cursor.moveToNext()) {
-                binding.favoriteIv.setImageResource(R.drawable.ic_star_white_24px);
-                isFavorite = true;
-            } else {
-                binding.favoriteIv.setImageResource(R.drawable.ic_star_border_white_24px);
-                isFavorite = false;
-            }
-
-            if (cursor != null) {
-                cursor.close();
-            }
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (miniMovie != null) {
+                                binding.favoriteIv.setImageResource(R.drawable.ic_star_white_24px);
+                                isFavorite = true;
+                            } else {
+                                binding.favoriteIv.setImageResource(R.drawable.ic_star_border_white_24px);
+                                isFavorite = false;
+                            }
+                        }
+                    });
+                }
+            });
         }
 
         /**
@@ -151,13 +152,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         public void onClickFavorite(View view) {
             String snackBarText;
             int position = getAdapterPosition();
-            Movie movie = mList.get(position);
+            final Movie movie = mList.get(position);
 
             if (isFavorite) {
-                mContext.getContentResolver().delete(
-                        MovieContract.MovieEntry.buildMovieUriWithId(movie.getMovieId()),
-                        null,
-                        null);
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDatabase.movieDao().delete(movie);
+                    }
+                });
                 isFavorite = false;
                 binding.favoriteIv.setImageResource(R.drawable.ic_star_border_white_24px);
                 snackBarText = mContext.getString(R.string.remove_favorite);
@@ -171,18 +174,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                 }
 
             } else {
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.getMovieId());
-                contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, movie.getMovieTitle());
-                contentValues.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
-                contentValues.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, movie.getPlotSynopsis());
-                contentValues.put(MovieContract.MovieEntry.COLUMN_USER_RATING, movie.getUserRating());
-                contentValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
-                contentValues.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH, movie.getBackdropPath());
-
-                mContext.getContentResolver().insert(
-                        MovieContract.MovieEntry.CONTENT_URI,
-                        contentValues);
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDatabase.movieDao().insert(movie);
+                    }
+                });
                 isFavorite = true;
                 binding.favoriteIv.setImageResource(R.drawable.ic_star_white_24px);
                 snackBarText = mContext.getString(R.string.add_favorite);
@@ -191,4 +188,3 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         }
     }
 }
-

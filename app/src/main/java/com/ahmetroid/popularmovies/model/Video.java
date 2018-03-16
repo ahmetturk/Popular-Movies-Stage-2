@@ -18,13 +18,11 @@ public class Video implements Parcelable {
     };
 
     @SerializedName("key")
-    private final String videoUrl;
+    private String videoUrl;
     @SerializedName("name")
-    private final String videoName;
+    private String videoName;
 
-    public Video(String videoUrl, String videoName) {
-        this.videoUrl = videoUrl;
-        this.videoName = videoName;
+    public Video() {
     }
 
     private Video(Parcel in) {
@@ -36,8 +34,16 @@ public class Video implements Parcelable {
         return videoUrl;
     }
 
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
+    }
+
     public String getVideoName() {
         return videoName;
+    }
+
+    public void setVideoName(String videoName) {
+        this.videoName = videoName;
     }
 
     @Override
@@ -51,4 +57,3 @@ public class Video implements Parcelable {
         parcel.writeString(videoName);
     }
 }
-

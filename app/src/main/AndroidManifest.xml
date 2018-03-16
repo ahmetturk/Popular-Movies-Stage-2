@@ -37,11 +37,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.MainActivity" />
         </activity>
-
-        <provider
-            android:name=".data.MovieProvider"
-            android:authorities="com.ahmetroid.popularmovies"
-            android:exported="false" />
     </application>
 
 </manifest>

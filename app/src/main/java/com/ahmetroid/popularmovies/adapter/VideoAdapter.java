@@ -71,7 +71,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoAdapter
             binding.setPresenter(this);
 
             String photoUrl = String.format("https://img.youtube.com/vi/%s/0.jpg", video.getVideoUrl());
-            Picasso.with(mContext)
+            Picasso.get()
                     .load(photoUrl)
                     .placeholder(R.drawable.placeholder)
                     .error(R.drawable.error)
