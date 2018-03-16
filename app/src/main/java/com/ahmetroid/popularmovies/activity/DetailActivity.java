@@ -14,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.ahmetroid.popularmovies.R;
@@ -25,6 +26,7 @@ import com.ahmetroid.popularmovies.databinding.ActivityDetailBinding;
 import com.ahmetroid.popularmovies.model.ApiResponse;
 import com.ahmetroid.popularmovies.model.MiniMovie;
 import com.ahmetroid.popularmovies.model.Movie;
+import com.ahmetroid.popularmovies.model.MovieDetail;
 import com.ahmetroid.popularmovies.model.Review;
 import com.ahmetroid.popularmovies.model.Video;
 import com.ahmetroid.popularmovies.rest.ApiClient;
@@ -174,14 +176,10 @@ public class DetailActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<ApiResponse<Video>> call,
                                        Response<ApiResponse<Video>> response) {
-                    try {
-                        List<Video> result = response.body().getResults();
-                        if (result != null) {
-                            mVideoAdapter.addVideosList(result);
-                        }
-                    } catch (NullPointerException e) {
-                        Toast.makeText(DetailActivity.this,
-                                getString(R.string.connection_error), Toast.LENGTH_LONG).show();
+                    List<Video> result = response.body().getResults();
+                    mVideoAdapter.addVideosList(result);
+                    if (result.size() == 0) {
+                        mBinding.movieVideos.videosLabel.setVisibility(View.GONE);
                     }
                 }
 
@@ -219,14 +217,10 @@ public class DetailActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<ApiResponse<Review>> call,
                                        Response<ApiResponse<Review>> response) {
-                    try {
-                        List<Review> result = response.body().getResults();
-                        if (result != null) {
-                            mReviewAdapter.addReviewsList(result);
-                        }
-                    } catch (NullPointerException e) {
-                        Toast.makeText(DetailActivity.this,
-                                getString(R.string.connection_error), Toast.LENGTH_LONG).show();
+                    List<Review> result = response.body().getResults();
+                    mReviewAdapter.addReviewsList(result);
+                    if (result.size() == 0) {
+                        mBinding.movieReviews.reviewsLabel.setVisibility(View.GONE);
                     }
                 }
 
@@ -301,5 +295,30 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         return DateFormat.getDateInstance(DateFormat.LONG).format(date);
+    }
+
+    public String getEnglishPlotSynopsis(String id) {
+        Call<MovieDetail> call = mApiClient.getMovieById(id);
+
+        call.enqueue(new Callback<MovieDetail>() {
+            @Override
+            public void onResponse(Call<MovieDetail> call, Response<MovieDetail> response) {
+                try {
+                    String plotSynopsis = response.body().getPlotSynopsis();
+                    mBinding.movieDetails.plotSynopsisTv.setText(plotSynopsis);
+                } catch (NullPointerException e) {
+                    Toast.makeText(DetailActivity.this,
+                            getString(R.string.connection_error), Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MovieDetail> call, Throwable t) {
+                Toast.makeText(DetailActivity.this,
+                        getString(R.string.connection_error), Toast.LENGTH_LONG).show();
+            }
+        });
+
+        return "";
     }
 }

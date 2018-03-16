@@ -2,6 +2,7 @@ package com.ahmetroid.popularmovies.rest;
 
 import com.ahmetroid.popularmovies.model.ApiResponse;
 import com.ahmetroid.popularmovies.model.Movie;
+import com.ahmetroid.popularmovies.model.MovieDetail;
 import com.ahmetroid.popularmovies.model.Review;
 import com.ahmetroid.popularmovies.model.Video;
 
@@ -24,4 +25,7 @@ public interface ApiClient {
 
     @GET("movie/{id}/videos")
     Call<ApiResponse<Video>> getVideos(@Path("id") String id);
+
+    @GET("movie/{id}")
+    Call<MovieDetail> getMovieById(@Path("id") String id);
 }
