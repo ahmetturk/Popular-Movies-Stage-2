@@ -27,6 +27,8 @@ public class Movie implements Parcelable {
     private String movieId;
     @SerializedName("title")
     private String movieTitle;
+    @SerializedName("original_title")
+    private String originalTitle;
     @SerializedName("poster_path")
     private String posterPath;
     @SerializedName("overview")
@@ -44,6 +46,7 @@ public class Movie implements Parcelable {
     private Movie(Parcel in) {
         this.movieId = in.readString();
         this.movieTitle = in.readString();
+        this.originalTitle = in.readString();
         this.posterPath = in.readString();
         this.plotSynopsis = in.readString();
         this.userRating = in.readString();
@@ -51,6 +54,7 @@ public class Movie implements Parcelable {
         this.backdropPath = in.readString();
     }
 
+    @NonNull
     public String getMovieId() {
         return movieId;
     }
@@ -107,6 +111,14 @@ public class Movie implements Parcelable {
         this.backdropPath = backdropPath;
     }
 
+    public String getOriginalTitle() {
+        return originalTitle;
+    }
+
+    public void setOriginalTitle(String originalTitle) {
+        this.originalTitle = originalTitle;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -116,6 +128,7 @@ public class Movie implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(movieId);
         parcel.writeString(movieTitle);
+        parcel.writeString(originalTitle);
         parcel.writeString(posterPath);
         parcel.writeString(plotSynopsis);
         parcel.writeString(userRating);

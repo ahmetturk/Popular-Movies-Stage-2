@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.util.DisplayMetrics;
@@ -51,9 +50,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     // popular = 0, highest rated = 1, favorites = 2
     public static final int FAVORITES = 2;
 
-    // Cursor Loader ID
-    private static final int ID_FAVORITES_LOADER = 1;
-
     // keys for savedInstanceState bundle
     private static final String BUNDLE_MOVIES = "movies";
     private static final String BUNDLE_PAGE = "page";
@@ -80,9 +76,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mBinding.setPresenter(this);
         mDatabase = PopMovDatabase.getInstance(this);
-
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Movies");
 
         mApiClient = ServiceGenerator.createService(ApiClient.class);
 
@@ -271,9 +264,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (i < 2) {
-                    getSupportLoaderManager().destroyLoader(ID_FAVORITES_LOADER);
-                }
                 PopMovPreferences.setSorting(MainActivity.this, i);
                 populateUI();
             }

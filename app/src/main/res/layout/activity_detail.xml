@@ -37,7 +37,7 @@
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 app:scrimAnimationDuration="300"
                 app:scrimVisibleHeightTrigger="100dp"
-                app:title="@{movie.movieTitle}">
+                app:title="@{movie.originalTitle}">
 
                 <ImageView
                     android:id="@+id/backdrop"
@@ -78,7 +78,8 @@
                 <include
                     android:id="@+id/movie_details"
                     layout="@layout/detail_movie"
-                    bind:movie="@{movie}" />
+                    bind:movie="@{movie}"
+                    bind:presenter="@{presenter}" />
 
                 <include
                     android:id="@+id/movie_videos"

@@ -13,7 +13,7 @@
             type="com.ahmetroid.popularmovies.adapter.MovieAdapter.MovieAdapterViewHolder" />
     </data>
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/movieItemParent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,19 +21,21 @@
 
         <ImageView
             android:id="@+id/movieItemIv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:adjustViewBounds="true"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:contentDescription="@string/cd_movie_item"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            app:layout_constraintDimensionRatio="H,2:3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/movieTitleTv"
             android:layout_width="match_parent"
             android:layout_height="@dimen/grid_info_height"
-            android:layout_alignParentBottom="true"
             android:background="#88000000"
-            android:ellipsize="end"
+            android:ellipsize="none"
             android:gravity="center_vertical"
             android:maxLines="2"
             android:paddingEnd="@dimen/grid_right_padding"
@@ -42,19 +44,21 @@
             android:paddingStart="@dimen/grid_left_padding"
             android:text="@{movie.movieTitle}"
             android:textColor="@android:color/white"
-            android:textSize="@dimen/grid_info_text_size" />
+            android:textSize="@dimen/grid_info_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageView
             android:id="@+id/favoriteIv"
             android:layout_width="@dimen/grid_info_height"
             android:layout_height="@dimen/grid_info_height"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:contentDescription="@string/cd_favorite"
             android:onClick="@{(view) -> presenter.onClickFavorite(view)}"
             android:padding="@dimen/image_padding"
+            app:layout_constraintBottom_toBottomOf="@+id/movieTitleTv"
+            app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_star_border_white_24px" />
 
-    </RelativeLayout>
+    </android.support.constraint.ConstraintLayout>
 </layout>

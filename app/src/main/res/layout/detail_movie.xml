@@ -4,10 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="movie"
             type="com.ahmetroid.popularmovies.model.Movie" />
+
+        <variable
+            name="presenter"
+            type="com.ahmetroid.popularmovies.activity.DetailActivity" />
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -23,7 +26,7 @@
             android:layout_marginStart="@dimen/margin_medium"
             android:layout_marginTop="@dimen/margin_medium"
             android:contentDescription="@string/cd_movie_item"
-            android:scaleType="fitCenter"
+            android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -53,7 +56,7 @@
         <TextView
             android:id="@+id/releaseDateTv"
             style="@style/DetailText"
-            android:text="@{movie.releaseDate}"
+            android:text="@{presenter.formatReleaseDate(movie.releaseDate)}"
             app:layout_constraintStart_toEndOf="@+id/poster"
             app:layout_constraintTop_toBottomOf="@+id/releaseDateLabel"
             tools:text="2014-09-10" />

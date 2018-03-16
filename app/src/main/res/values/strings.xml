@@ -28,7 +28,7 @@
     <!--For Detail Activity-->
     <string name="release_date">Release Date</string>
     <string name="user_rating">User Score</string>
-    <string name="user_rating_text">%1$s/10</string>
+    <string name="user_rating_text" translatable="false">%1$s / 10</string>
     <string name="plot_synopsis">Overview</string>
     <string name="videos">Videos</string>
     <string name="reviews">Reviews</string>
@@ -47,5 +47,5 @@
     <string name="connection_error">Connection Error</string>
 
     <!--For About Activity-->
-    <string name="description">All movie data is provided by The Movie DB.\nDeveloped by Ahmet Turk</string>
+    <string name="description">This product uses TMDb API but is not endorsed or certified by TMDb.\nDeveloped by Ahmet Türk</string>
 </resources>

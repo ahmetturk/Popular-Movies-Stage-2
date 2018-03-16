@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Popüler Filmler</string>
+    <string name="action_settings">Ayarlar</string>
+    <string name="action_share">Paylaş</string>
+    <string name="action_sort">Sıralama</string>
+    <string name="add_favorite">Favorilere eklendi</string>
+    <string name="cd_favorite">Favori</string>
+    <string name="cd_less">Küçült</string>
+    <string name="cd_more">Genişlet</string>
+    <string name="cd_movie_item">Film Posteri</string>
+    <string name="cd_status">Durum</string>
+    <string name="cd_video">Video</string>
+    <string name="connection_error">Bağlantı Hatası</string>
+    <string name="description">Bu ürün TMDb API\'si kullanmaktadır ama TMDb tarafından uygun görülmüş veya sertifikalanmış değildir.\nAhmet Türk tarafından geliştirilmiştir.</string>
+    <string name="language">tr-TR</string>
+    <string name="no_app">Bu cihazda herhangi bir paylaşım uygulaması yüklü değildir.</string>
+    <string name="no_favorite">Filmi favorilere eklemek için yıldıza tıkla</string>
+    <string name="no_internet">İnternet bağlantısı yok, yukarıdan çekerek yenile</string>
+    <string name="not_this_star">Bu yıldıza değil. Film posterindeki veya detay sayfasındaki yıldıza tıkla.</string>
+    <string name="plot_synopsis">Özet</string>
+    <string name="pref_sort_label_favorite">Favoriler</string>
+    <string name="pref_sort_label_highest_rated">Yüksek Puanlı</string>
+    <string name="pref_sort_label_popular">En Popüler</string>
+    <string name="release_date">Çıkış Tarihi</string>
+    <string name="remove_favorite">Favorilerden kaldırıldı</string>
+    <string name="reviews">Yorumlar</string>
+    <string name="user_rating">Kullanıcı Puanı</string>
+    <string name="videos">Fragmanlar</string>
+    <string name="view_less">KÜÇÜLT</string>
+    <string name="view_more">DEVAMINI GÖR</string>
+</resources>

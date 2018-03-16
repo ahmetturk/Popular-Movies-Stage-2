@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 abstract public class RecyclerViewScrollListener extends RecyclerView.OnScrollListener {
 
     private final GridLayoutManager mLayoutManager;
-    private int previousTotalItemCount = 20;
+    private int previousTotalItemCount = 10;
     private int page = 2;
     private boolean loading = true;
 
@@ -37,7 +37,7 @@ abstract public class RecyclerViewScrollListener extends RecyclerView.OnScrollLi
     public void resetState() {
         this.page = 2;
         this.previousTotalItemCount = 10;
-        this.loading = false;
+        this.loading = true;
     }
 
     public void setState(int page, int count) {

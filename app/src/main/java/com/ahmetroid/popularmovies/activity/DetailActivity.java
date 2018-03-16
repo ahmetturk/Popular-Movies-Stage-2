@@ -34,6 +34,10 @@ import com.ahmetroid.popularmovies.utils.MyExecutor;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -285,5 +289,17 @@ public class DetailActivity extends AppCompatActivity {
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public String formatReleaseDate(String releaseDate) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date;
+        try {
+            date = sdf.parse(releaseDate);
+        } catch (ParseException e) {
+            return releaseDate;
+        }
+
+        return DateFormat.getDateInstance(DateFormat.LONG).format(date);
     }
 }
