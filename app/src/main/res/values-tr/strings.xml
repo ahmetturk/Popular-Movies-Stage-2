@@ -6,7 +6,6 @@
     <string name="action_sort">Sıralama</string>
     <string name="add_favorite">Favorilere eklendi</string>
     <string name="cd_favorite">Favori</string>
-    <string name="cd_less">Küçült</string>
     <string name="cd_more">Genişlet</string>
     <string name="cd_movie_item">Film Posteri</string>
     <string name="cd_status">Durum</string>
@@ -25,8 +24,8 @@
     <string name="release_date">Çıkış Tarihi</string>
     <string name="remove_favorite">Favorilerden kaldırıldı</string>
     <string name="reviews">Yorumlar</string>
+    <string name="review">Yorum</string>
     <string name="user_rating">Kullanıcı Puanı</string>
     <string name="videos">Fragmanlar</string>
-    <string name="view_less">KÜÇÜLT</string>
-    <string name="view_more">DEVAMINI GÖR</string>
+    <string name="view_more">DEVAMINI OKU</string>
 </resources>

@@ -1,13 +1,17 @@
 package com.ahmetroid.popularmovies.activity;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,6 +26,7 @@ import com.ahmetroid.popularmovies.adapter.ReviewAdapter;
 import com.ahmetroid.popularmovies.adapter.VideoAdapter;
 import com.ahmetroid.popularmovies.data.AppDatabase;
 import com.ahmetroid.popularmovies.data.PopMovDatabase;
+import com.ahmetroid.popularmovies.data.PopMovPreferences;
 import com.ahmetroid.popularmovies.databinding.ActivityDetailBinding;
 import com.ahmetroid.popularmovies.model.ApiResponse;
 import com.ahmetroid.popularmovies.model.MiniMovie;
@@ -48,7 +53,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DetailActivity extends AppCompatActivity {
-    public static final String DETAIL_INTENT_KEY = "com.example.ahmet.popularmovies.detail";
+    public static final String DETAIL_INTENT_KEY = "com.example.ahmet.popularmovies.activity.detail";
+    public static final String MOVIE_NUMBER_KEY = "com.example.ahmet.popularmovies.activity.movie_number";
 
     private static final String BUNDLE_VIDEOS = "videos";
     private static final String BUNDLE_REVIEWS = "reviews";
@@ -62,6 +68,8 @@ public class DetailActivity extends AppCompatActivity {
     private Movie movie;
     private ApiClient mApiClient;
     private Executor executor;
+    private int movieNumber;
+    private int color;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,10 +78,12 @@ public class DetailActivity extends AppCompatActivity {
         mDatabase = PopMovDatabase.getInstance(this);
 
         mApiClient = ServiceGenerator.createService(ApiClient.class);
-
         executor = new MyExecutor();
 
-        movie = getIntent().getParcelableExtra(DETAIL_INTENT_KEY);
+        Intent intent = getIntent();
+        movieNumber = intent.getIntExtra(MOVIE_NUMBER_KEY, -1);
+        movie = intent.getParcelableExtra(DETAIL_INTENT_KEY);
+
         mBinding.setMovie(movie);
         mBinding.setPresenter(this);
 
@@ -107,7 +117,7 @@ public class DetailActivity extends AppCompatActivity {
                 Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
                     @Override
                     public void onGenerated(@NonNull Palette palette) {
-                        int color = palette.getMutedColor(R.attr.colorPrimary) | 0xFF000000;
+                        color = palette.getMutedColor(R.attr.colorPrimary) | 0xFF000000;
                         mBinding.collapsingToolbar.setContentScrimColor(color);
                         mBinding.collapsingToolbar.setStatusBarScrimColor(color);
                     }
@@ -238,6 +248,8 @@ public class DetailActivity extends AppCompatActivity {
      * adding favorite means adds it to sql database
      */
     public void onClickFavoriteButton() {
+        PopMovPreferences.setChangedMovie(this, movieNumber);
+
         String snackBarText;
         if (isFavorite) {
             executor.execute(new Runnable() {
@@ -271,21 +283,34 @@ public class DetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.share) {
-            String shareText = "https://www.themoviedb.org/movie/" + movie.getMovieId();
-            ShareCompat.IntentBuilder intentBuilder = ShareCompat.IntentBuilder.from(this)
-                    .setText(shareText)
-                    .setType("text/plain");
-            try {
-                intentBuilder.startChooser();
-            } catch (ActivityNotFoundException e) {
-                Toast.makeText(this, R.string.no_app, Toast.LENGTH_LONG).show();
-            }
+        switch (item.getItemId()) {
+            case R.id.share:
+                String shareText = "https://www.themoviedb.org/movie/" + movie.getMovieId();
+                ShareCompat.IntentBuilder intentBuilder = ShareCompat.IntentBuilder.from(this)
+                        .setText(shareText)
+                        .setType("text/plain");
+                try {
+                    intentBuilder.startChooser();
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(this, R.string.no_app, Toast.LENGTH_LONG).show();
+                }
+                return true;
+            case android.R.id.home:
+                mBinding.favoriteButton.setVisibility(View.INVISIBLE);
+                supportFinishAfterTransition();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        mBinding.favoriteButton.setVisibility(View.INVISIBLE);
+        super.onBackPressed();
+    }
+
     public String formatReleaseDate(String releaseDate) {
+        @SuppressLint("SimpleDateFormat")
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date;
         try {
@@ -320,5 +345,17 @@ public class DetailActivity extends AppCompatActivity {
         });
 
         return "";
+    }
+
+    public void onClickExpand(View view, Review review) {
+        Intent intent = new Intent(this, ReviewActivity.class);
+        ActivityOptionsCompat options = ActivityOptionsCompat.
+                makeSceneTransitionAnimation(this,
+                        view,
+                        ViewCompat.getTransitionName(view));
+        intent.putExtra(ReviewActivity.REVIEW_INTENT_KEY, review);
+        intent.putExtra(ReviewActivity.MOVIE_TITLE_KEY, movie.getOriginalTitle());
+        intent.putExtra(ReviewActivity.COLOR_ACTIONBAR_KEY, color);
+        startActivity(intent, options.toBundle());
     }
 }

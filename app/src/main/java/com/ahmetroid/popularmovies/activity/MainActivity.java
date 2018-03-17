@@ -69,9 +69,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //if (BuildConfig.DEBUG) {
-        //    Stetho.initializeWithDefaults(this);
-        //}
+        //Stetho.initializeWithDefaults(this);
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mBinding.setPresenter(this);
@@ -128,11 +126,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     @Override
     protected void onResume() {
         super.onResume();
-        int movieNumber = PopMovPreferences.getChangedMovie(this);
-        if (movieNumber != -1) {
-            mMoviesAdapter.notifyItemChanged(movieNumber);
-            PopMovPreferences.setChangedMovie(this, -1);
-        }
+        mMoviesAdapter.refreshFavorite();
     }
 
     /**

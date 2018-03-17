@@ -19,7 +19,6 @@
     <string name="cd_movie_item">Movie Poster</string>
     <string name="cd_video">Video</string>
     <string name="cd_favorite">Favorite</string>
-    <string name="cd_less">Expand Less</string>
     <string name="cd_more">Expand More</string>
     <string name="cd_status">Status</string>
 
@@ -32,14 +31,14 @@
     <string name="plot_synopsis">Overview</string>
     <string name="videos">Videos</string>
     <string name="reviews">Reviews</string>
+    <string name="review">Review</string>
 
     <string name="no_internet">No internet connection, swipe to refresh</string>
     <string name="no_favorite">To add a movie to favorites, tap star</string>
     <string name="not_this_star">Not this star. Tap star on poster or detail page.</string>
     <string name="no_app">There is not any sharing app installed on device</string>
 
-    <string name="view_more">VIEW MORE</string>
-    <string name="view_less">VIEW LESS</string>
+    <string name="view_more">READ MORE</string>
 
     <string name="add_favorite">Added to favorites</string>
     <string name="remove_favorite">Removed from favorites</string>
@@ -48,4 +47,7 @@
 
     <!--For About Activity-->
     <string name="description">This product uses TMDb API but is not endorsed or certified by TMDb.\nDeveloped by Ahmet Türk</string>
+
+    <string name="movie_transition" translatable="false">movie_transition</string>
+    <string name="review_transition" translatable="false">review_transition</string>
 </resources>

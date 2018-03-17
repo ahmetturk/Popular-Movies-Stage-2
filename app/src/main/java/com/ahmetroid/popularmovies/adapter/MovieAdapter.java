@@ -1,11 +1,13 @@
 package com.ahmetroid.popularmovies.adapter;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,14 +30,14 @@ import java.util.concurrent.Executor;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
-    private Context mContext;
+    private Activity mActivity;
     private AppDatabase mDatabase;
     private List<Movie> mList;
     private ListenerMovieAdapter mListener;
     private Executor executor;
 
-    public MovieAdapter(Context context, ListenerMovieAdapter listener, AppDatabase database) {
-        this.mContext = context;
+    public MovieAdapter(Activity activity, ListenerMovieAdapter listener, AppDatabase database) {
+        this.mActivity = activity;
         this.mListener = listener;
         this.mDatabase = database;
         this.executor = new MyExecutor();
@@ -44,7 +46,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     @Override
     @NonNull
     public MovieAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+        LayoutInflater layoutInflater = LayoutInflater.from(mActivity);
         ItemMovieBinding binding = ItemMovieBinding.inflate(layoutInflater, parent, false);
         return new MovieAdapterViewHolder(binding);
     }
@@ -83,6 +85,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     public ArrayList<Movie> getList() {
         return (ArrayList<Movie>) mList;
+    }
+
+    // using for refreshing favorite star when back from detail activity
+    public void refreshFavorite() {
+        int movieNumber = PopMovPreferences.getChangedMovie(mActivity);
+        if (movieNumber != -1) {
+            notifyItemChanged(movieNumber);
+            PopMovPreferences.setChangedMovie(mActivity, -1);
+        }
     }
 
     public interface ListenerMovieAdapter {
@@ -138,11 +149,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
          */
         public void openMovieDetail(Movie movie) {
             int movieNumber = getAdapterPosition();
-            PopMovPreferences.setChangedMovie(mContext, movieNumber);
 
-            Intent intent = new Intent(mContext, DetailActivity.class);
+            Intent intent = new Intent(mActivity, DetailActivity.class);
+            ActivityOptionsCompat options = ActivityOptionsCompat.
+                    makeSceneTransitionAnimation(mActivity,
+                            binding.movieItemIv,
+                            ViewCompat.getTransitionName(binding.movieItemIv));
             intent.putExtra(DetailActivity.DETAIL_INTENT_KEY, movie);
-            mContext.startActivity(intent);
+            intent.putExtra(DetailActivity.MOVIE_NUMBER_KEY, movieNumber);
+            mActivity.startActivity(intent, options.toBundle());
         }
 
         /**
@@ -163,9 +178,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                 });
                 isFavorite = false;
                 binding.favoriteIv.setImageResource(R.drawable.ic_star_border_white_24px);
-                snackBarText = mContext.getString(R.string.remove_favorite);
+                snackBarText = mActivity.getString(R.string.remove_favorite);
 
-                if (PopMovPreferences.getSorting(mContext) == MainActivity.FAVORITES) {
+                if (PopMovPreferences.getSorting(mActivity) == MainActivity.FAVORITES) {
                     mList.remove(position);
                     notifyItemRemoved(position);
                     if (mList.isEmpty()) {
@@ -182,7 +197,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                 });
                 isFavorite = true;
                 binding.favoriteIv.setImageResource(R.drawable.ic_star_white_24px);
-                snackBarText = mContext.getString(R.string.add_favorite);
+                snackBarText = mActivity.getString(R.string.add_favorite);
             }
             Snackbar.make(view, snackBarText, Snackbar.LENGTH_SHORT).show();
         }
