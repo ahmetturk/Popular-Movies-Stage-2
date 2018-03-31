@@ -6,7 +6,7 @@ import android.preference.PreferenceManager;
 
 import com.ahmetroid.popularmovies.R;
 
-public class PopMovPreferences {
+public class AppPreferences {
     public static int getSorting(Context context) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         return sp.getInt(context.getString(R.string.pref_sort_key), 0);

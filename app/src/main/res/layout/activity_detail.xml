@@ -7,7 +7,7 @@
 
         <variable
             name="presenter"
-            type="com.ahmetroid.popularmovies.activity.DetailActivity" />
+            type="com.ahmetroid.popularmovies.ui.DetailActivity" />
 
         <variable
             name="movie"
@@ -31,7 +31,7 @@
                 android:id="@+id/collapsing_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/app_bar_layout_height"
-                app:contentScrim="?attr/colorPrimary"
+                app:contentScrim="@color/colorPrimary"
                 app:expandedTitleMarginEnd="@dimen/margin_medium"
                 app:expandedTitleMarginStart="@dimen/margin_medium"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
@@ -73,7 +73,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="200dp">
+                android:descendantFocusability="blocksDescendants"
+                android:paddingBottom="100dp">
 
                 <include
                     android:id="@+id/movie_details"

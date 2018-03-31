@@ -18,32 +18,13 @@ public class Video implements Parcelable {
     };
 
     @SerializedName("key")
-    private String videoUrl;
+    public String videoUrl;
     @SerializedName("name")
-    private String videoName;
-
-    public Video() {
-    }
+    public String videoName;
 
     private Video(Parcel in) {
         videoUrl = in.readString();
         videoName = in.readString();
-    }
-
-    public String getVideoUrl() {
-        return videoUrl;
-    }
-
-    public void setVideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl;
-    }
-
-    public String getVideoName() {
-        return videoName;
-    }
-
-    public void setVideoName(String videoName) {
-        this.videoName = videoName;
     }
 
     @Override

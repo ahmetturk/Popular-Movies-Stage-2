@@ -16,7 +16,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context="com.ahmetroid.popularmovies.activity.ReviewActivity">
+            tools:context="com.ahmetroid.popularmovies.ui.ReviewActivity">
 
             <TextView
                 android:id="@+id/authorTv"

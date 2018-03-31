@@ -10,7 +10,7 @@
 
         <variable
             name="presenter"
-            type="com.ahmetroid.popularmovies.activity.DetailActivity" />
+            type="com.ahmetroid.popularmovies.ui.DetailActivity" />
     </data>
 
     <android.support.v7.widget.CardView

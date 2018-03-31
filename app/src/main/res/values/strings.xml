@@ -46,7 +46,7 @@
     <string name="connection_error">Connection Error</string>
 
     <!--For About Activity-->
-    <string name="description">This product uses TMDb API but is not endorsed or certified by TMDb.\nDeveloped by Ahmet Türk</string>
+    <string name="description">This product uses TMDb API.\nDeveloped by Ahmet Türk</string>
 
     <string name="movie_transition" translatable="false">movie_transition</string>
     <string name="review_transition" translatable="false">review_transition</string>

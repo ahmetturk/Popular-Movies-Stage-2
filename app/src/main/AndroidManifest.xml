@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".ui.MainActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,22 +22,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.DetailActivity"
-            android:parentActivityName=".activity.MainActivity"
+            android:name=".ui.DetailActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:theme="@style/AppThemeTranslucent">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
         <activity
-            android:name=".activity.AboutActivity"
-            android:parentActivityName=".activity.MainActivity"
+            android:name=".ui.AboutActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
-        <activity android:name=".activity.ReviewActivity" />
+        <activity android:name=".ui.ReviewActivity" />
     </application>
 
 </manifest>

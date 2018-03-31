@@ -6,9 +6,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.ahmetroid.popularmovies.activity.DetailActivity;
 import com.ahmetroid.popularmovies.databinding.ItemReviewBinding;
 import com.ahmetroid.popularmovies.model.Review;
+import com.ahmetroid.popularmovies.ui.DetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,15 +54,14 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewAdap
     }
 
     public class ReviewAdapterViewHolder extends RecyclerView.ViewHolder {
-
         ItemReviewBinding binding;
 
-        public ReviewAdapterViewHolder(ItemReviewBinding binding) {
+        ReviewAdapterViewHolder(ItemReviewBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        public void bind(Review review) {
+        void bind(Review review) {
             binding.setReview(review);
             binding.setPresenter((DetailActivity) mActivity);
         }

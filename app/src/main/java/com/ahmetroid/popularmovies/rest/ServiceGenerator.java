@@ -30,9 +30,7 @@ public class ServiceGenerator {
                     request = request.newBuilder().url(httpUrl).build();
                     return chain.proceed(request);
                 }
-            })
-            //.addNetworkInterceptor(new StethoInterceptor())
-            .build();
+            }).build();
 
     private static Retrofit.Builder builder =
             new Retrofit.Builder()

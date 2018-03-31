@@ -11,7 +11,7 @@
     <string name="cd_status">Durum</string>
     <string name="cd_video">Video</string>
     <string name="connection_error">Bağlantı Hatası</string>
-    <string name="description">Bu ürün TMDb API\'si kullanmaktadır ama TMDb tarafından uygun görülmüş veya sertifikalanmış değildir.\nAhmet Türk tarafından geliştirilmiştir.</string>
+    <string name="description">Bu ürün TMDb API\'si kullanmaktadır.\nAhmet Türk tarafından geliştirilmiştir.</string>
     <string name="language">tr-TR</string>
     <string name="no_app">Bu cihazda herhangi bir paylaşım uygulaması yüklü değildir.</string>
     <string name="no_favorite">Filmi favorilere eklemek için yıldıza tıkla</string>

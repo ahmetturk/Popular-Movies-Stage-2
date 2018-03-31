@@ -58,19 +58,18 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoAdapter
     }
 
     public class VideoAdapterViewHolder extends RecyclerView.ViewHolder {
-
-        public ItemVideoBinding binding;
+        ItemVideoBinding binding;
 
         VideoAdapterViewHolder(ItemVideoBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        public void bind(Video video) {
+        void bind(Video video) {
             binding.setVideo(video);
             binding.setPresenter(this);
 
-            String photoUrl = String.format("https://img.youtube.com/vi/%s/0.jpg", video.getVideoUrl());
+            String photoUrl = String.format("https://img.youtube.com/vi/%s/0.jpg", video.videoUrl);
             Picasso.get()
                     .load(photoUrl)
                     .placeholder(R.drawable.placeholder)

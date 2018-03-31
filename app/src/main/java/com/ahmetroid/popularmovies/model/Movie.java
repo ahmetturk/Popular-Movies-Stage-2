@@ -24,21 +24,21 @@ public class Movie implements Parcelable {
     @PrimaryKey
     @NonNull
     @SerializedName("id")
-    private String movieId;
+    public String movieId;
     @SerializedName("title")
-    private String movieTitle;
+    public String movieTitle;
     @SerializedName("original_title")
-    private String originalTitle;
+    public String originalTitle;
     @SerializedName("poster_path")
-    private String posterPath;
+    public String posterPath;
     @SerializedName("overview")
-    private String plotSynopsis;
+    public String plotSynopsis;
     @SerializedName("vote_average")
-    private String userRating;
+    public String userRating;
     @SerializedName("release_date")
-    private String releaseDate;
+    public String releaseDate;
     @SerializedName("backdrop_path")
-    private String backdropPath;
+    public String backdropPath;
 
     public Movie() {
     }
@@ -52,71 +52,6 @@ public class Movie implements Parcelable {
         this.userRating = in.readString();
         this.releaseDate = in.readString();
         this.backdropPath = in.readString();
-    }
-
-    @NonNull
-    public String getMovieId() {
-        return movieId;
-    }
-
-    public void setMovieId(@NonNull String movieId) {
-        this.movieId = movieId;
-    }
-
-    public String getMovieTitle() {
-        return movieTitle;
-    }
-
-    public void setMovieTitle(String movieTitle) {
-        this.movieTitle = movieTitle;
-    }
-
-    public String getPosterPath() {
-        return posterPath;
-    }
-
-    public void setPosterPath(String posterPath) {
-        this.posterPath = posterPath;
-    }
-
-    public String getPlotSynopsis() {
-        return plotSynopsis;
-    }
-
-    public void setPlotSynopsis(String plotSynopsis) {
-        this.plotSynopsis = plotSynopsis;
-    }
-
-    public String getUserRating() {
-        return userRating;
-    }
-
-    public void setUserRating(String userRating) {
-        this.userRating = userRating;
-    }
-
-    public String getReleaseDate() {
-        return releaseDate;
-    }
-
-    public void setReleaseDate(String releaseDate) {
-        this.releaseDate = releaseDate;
-    }
-
-    public String getBackdropPath() {
-        return backdropPath;
-    }
-
-    public void setBackdropPath(String backdropPath) {
-        this.backdropPath = backdropPath;
-    }
-
-    public String getOriginalTitle() {
-        return originalTitle;
-    }
-
-    public void setOriginalTitle(String originalTitle) {
-        this.originalTitle = originalTitle;
     }
 
     @Override
